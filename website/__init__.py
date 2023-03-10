@@ -7,7 +7,7 @@ import os
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'docx', 'doc'}
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/img/')
 ADMIN = "kristian.paivinen@yahoo.com"
 SIGNUP_ENABLED = True
