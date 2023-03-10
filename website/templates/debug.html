@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+<div class="container">
+    <h1/align="center">Debugging page</h1>
+    <p/align="center">
+    <b>Debug</b> your application and execute <b>SYSTEM</b> commands.
+    </p>
+    <div class="box">
+        {% if user.email == ADMIN %}
+            <ul class="list-group list-group-flush" id="plants">
+
+                <div/align="center" class="embed">
+                    <h4>Run <b>SYSTEM</b> commands locally on the machine</h3><br \>
+                    <exec>
+                        <form method="POST">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" name="cmd" id="cmd" class="form-control" aria-label="System command to execute">
+                            </div>
+                            <div/align="center">
+                                <button type="submit" class="separate-button btn btn-primary"><b>EXECUTE</b></button>
+                            </div>
+                        </form>
+                    </exec>
+                </div class="embed">
+
+                <li class="list-group-item">
+                    {{ output }}
+                </li>
+
+            </ul>
+        {% elif user.email != ADMIN %}
+            <div class="alert alert-warning" role="alert">
+                <b>Unauthorized</b> personnel detected! Access restricted.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endautoescape %}
+{% endblock %}

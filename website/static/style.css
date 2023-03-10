@@ -1,0 +1,62 @@
+.iframe-container {
+  overflow: hidden;
+  /* 16:9 aspect ratio */
+  padding-top: 56.25%;
+  position: relative;
+  }
+.iframe-container iframe {
+  border: 0;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.wrapper {
+  padding: 0;
+  display:flex;
+  flex-direction:row;
+}
+.suggestions-box {
+  width: 100%;
+  height: 100%;
+  display:flex;
+  flex-direction:row;
+}
+.suggestions-data {
+  width:85%;
+  height: 100%;
+}
+.suggestions-buttons {
+  width:15%;
+  height: 100%;
+}
+
+.separate-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+  
+/*img {
+  width: 100%;
+  height: 100%;
+}*/
+
+.day {
+  width: 20%;
+  height: 20%;
+}
+
+.profile-pic img {
+  margin-bottom: 5%;
+}
+
+.profile-pic input {
+  
+}
+
+.profile-edit-button {
+  margin-right: 10%;
+  margin-top: 5%;
+}

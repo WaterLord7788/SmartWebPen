@@ -1,0 +1,42 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+<div class="container">
+    <h1/align="center">Suggestions</h1>
+    <p/align="center">
+    <b>Accept</b> or <b>decline</b> sent suggestions regarding new plants from users.
+    </p>
+    <div class="box">
+        <ul class="list-group list-group-flush" id="suggestions">
+    </div>
+        {% if user.email == ADMIN %}
+            {% for suggestion in suggestions %}
+            <li class="list-group-item">
+                <div class="suggestions-box">
+                    <div class="suggestions-data">
+                        <div/align="left">
+                            {{ suggestion.data }}
+                        </div>
+                    </div>
+                {% if user.email == ADMIN %}
+                    <div class="suggestions-buttons">
+                        <div/align="right" style="vertical-align: top;">
+                            <button type="button" class="decline btn btn-danger" onclick="deleteSuggestion({{ suggestion.id }})">Delete</button>
+                            <button type="button" class="accept btn btn-success" onclick="acceptSuggestion({{ suggestion.id }})">Accept</button>
+                        </div>
+                    <div>
+                {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <b>Unauthorized</b> personnel detected! Access restricted.
+            </div>
+        {% endif %}
+            
+        </ul>
+</div>
+
+{% endautoescape %}
+{% endblock %}

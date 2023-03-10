@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+<div class="weather-container">
+    <h1/align="center">Weather</h1>
+    <p/align="center">
+    Browse through weather in <a href="http://127.0.0.1:5000/weather?city=nokia">Nokia</a> city.
+    </p>
+    <div class="box">
+        <ul class="list-group list-group-flush" id="weather">
+        {% if results %}
+            {% for day in results %}
+            <li class="list-group-item">
+            {{ day }}
+            </li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+    </div>
+</div>
+
+{% endautoescape %}
+{% endblock %}

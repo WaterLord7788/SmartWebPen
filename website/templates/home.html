@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+  %}
+  {% autoescape false %}
+  
+  <div class="container">
+    <h1/align="center">Notes v1</h1>
+    <p/align="center">
+      Use <b>HTML</b> to make your notes more beautiful!</b>
+      <br>In addition, you can upload an image and paste it into your notes.
+    </p>
+    <div class="box">
+      <ul class="list-group list-group-flush" id="notes">
+          {% for note in user.notes %}
+          <li class="list-group-item">
+            {{ note.data }}
+            <button type="button" class="close" onClick="deleteNote({{ note.id }})">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </li>
+          {% endfor %}
+      </ul>
+    </div>
+  
+    <div class="embed">
+      <center>
+        <iframe frameBorder="0" width="1080" height="120" scrolling="no" src="http://127.0.0.1:5000/upload"></iframe>
+      </center>
+      <upload-note>
+        <form method="POST">
+          <textarea name="note" id="note" class="form-control"></textarea>
+          <div/align="center">
+            <button type="submit" class="separate-button btn btn-primary">Add Note</button>
+          </div>
+        </form>
+      </upload-note>
+    </div class="embed">
+  </div>
+  
+  {% endautoescape %}
+  {% endblock %}
