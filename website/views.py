@@ -54,6 +54,7 @@ def debug():
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
 
+"""
 @views.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -69,8 +70,14 @@ def profile():
         db.session.commit()
         flash('Profile updated!', category='success')
     return render_template('profile.html', user=current_user)
+"""
 
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
 def subdomains():
+    if request.method == 'POST':
+        if request.form.get('subdomain'):
+            pass
+        else:
+            return render_template('subdomains.html', user=current_user, state="No subdomain")
     return render_template('subdomains.html', user=current_user)

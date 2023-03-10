@@ -1,17 +1,24 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
 {% autoescape false %}
     
-<div class="container">
-    <h1/align="center">Subdomain emumeration</h1>
-    <p/align="center">
-        Supply your target <b>HOST</b> and enumerate all possible subdomains.
-    </p>
-    <div class="box">
-        <ul class="list-group list-group-flush" id="subdomains">
-        
-        <div class="embed">
-            <form method="POST">
-
+{% if state == "No subdomain" %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin-top: 2%;">
+    <strong>No Subdomain!</strong> You should write down the subdomain you want me to scan.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+<h1/align="center" style="margin-top: 2%;">Subdomain emumeration</h1>
+<p/align="center">
+    Supply your target <b>HOST</b> and enumerate all possible subdomains.
+</p>
+<div class="box">
+    <ul class="list-group list-group-flush" id="subdomains">
+    
+    <div class="embed">
+        <form method="POST">
+            <div>
                 <input/align="center" class="form-control" type="text" placeholder="Subdomain" name="subdomain">
 
                 <div/align="left" class="tools-used-box">
@@ -31,24 +38,24 @@
                 <div/align="left" class="wordlist-box">
                     <div class="form-check">
                         <input id="reactiveTickbox" class="form-check-input" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
-                            onclick="document.getElementById('wordlist').disabled = false;"
-                        >
+                            onclick="document.getElementById('wordlist').disabled = false;">
                         <label class="form-check-label" for="flexCheckDefault">
-                        Use custom <b>WORDLIST</b>
+                            Use custom <b>WORDLIST</b>
                         </label><br>
                         <input type="text" placeholder="/var/www/wordlists/..." id="wordlist" 
                             value="" name="customWordlist" disabled="True">
                     </div>
                 </div>
+            </div>
 
-                <div/align="center">
-                    <button type="submit" class="separate-button btn btn-primary">Start Subdomain Discovery</button>
-                    <br>
-                </div>
-            </form>
-        </div class="embed">
+            <div/align="center" class="submit-button">
+                <button type="submit" class="separate-button btn btn-primary">Start Subdomain Discovery</button>
+                <br>
+            </div>
 
-    </div>
+        </form>
+
+    </div class="embed">
 </div>
 
 {% endautoescape %}
