@@ -81,3 +81,13 @@ def subdomains():
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain")
     return render_template('subdomains.html', user=current_user)
+
+@views.route('/ports', methods=['GET', 'POST'])
+@login_required
+def ports():
+    if request.method == 'POST':
+        if request.form.get('domain'):
+            pass
+        else:
+            return render_template('ports.html', user=current_user, state="No domain")
+    return render_template('ports.html', user=current_user)

@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+{% if state == "No subdomain" %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin-top: 2%;">
+    <strong>No Subdomain!</strong> You should write down the subdomain you want me to scan.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+<h1/align="center" style="margin-top: 2%;">Open ports enumeration</h1>
+<p/align="center">
+    Supply your target <b>DOMAIN</b> and enumerate all open ports. Select suitable options for <b>nmap</b> command to be run against the target.
+</p>
+<div class="box">
+    <ul class="list-group list-group-flush" id="ports">
+    
+    <div class="embed">
+        <form method="POST">
+            <div>
+                <input/align="center" class="form-control" type="text" placeholder="Domain" name="domain">
+
+                <div/align="left" class="tools-used-box" style="margin-top: 10px;">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" name="use-p-_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-p-</b> flag
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use-sV_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-sV</b> flag
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use-Pn_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-Pn</b> flag
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use-A_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-A</b> flag
+                        </label><br>
+                    </div>
+                </div>
+
+                <div/align="left" class="wordlist-box" style="margin-top: 10px;">
+                    <div class="form-check">
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use-sO_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-sO</b> flag
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use-sC_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-sC</b> flag
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use-O_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>-O</b> flag
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="use--privileged_flag" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>--privileged</b> flag
+                        </label><br>
+                    </div>
+                </div>
+            </div>
+
+            <div/align="center" class="submit-button" style="margin-top: 10px;">
+                <button type="submit" class="separate-button btn btn-primary">Start Subdomain Discovery</button>
+                <br>
+            </div>
+
+        </form>
+
+    </div class="embed">
+</div>
+
+{% endautoescape %}
+{% endblock %}

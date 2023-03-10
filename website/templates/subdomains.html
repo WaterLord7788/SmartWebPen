@@ -21,7 +21,7 @@
             <div>
                 <input/align="center" class="form-control" type="text" placeholder="Subdomain" name="subdomain">
 
-                <div/align="left" class="tools-used-box">
+                <div/align="left" class="tools-used-box" style="margin-top: 10px;">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="true" name="useAMASS" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
@@ -35,20 +35,20 @@
                     </div>
                 </div>
 
-                <div/align="left" class="wordlist-box">
+                <div/align="left" class="wordlist-box" style="margin-top: 10px;">
                     <div class="form-check">
                         <input id="reactiveTickbox" class="form-check-input" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
                             onclick="document.getElementById('wordlist').disabled = false;">
                         <label class="form-check-label" for="flexCheckDefault">
                             Use custom <b>WORDLIST</b>
                         </label><br>
-                        <input type="text" placeholder="/var/www/wordlists/..." id="wordlist" 
-                            value="" name="customWordlist" disabled="True">
+                        <input type="text" placeholder="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" id="wordlist" 
+                            value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="customWordlist" disabled="True">
                     </div>
                 </div>
             </div>
 
-            <div/align="center" class="submit-button">
+            <div/align="center" class="submit-button" style="margin-top: 10px;">
                 <button type="submit" class="separate-button btn btn-primary">Start Subdomain Discovery</button>
                 <br>
             </div>
