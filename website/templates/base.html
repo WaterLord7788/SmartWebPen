@@ -35,14 +35,14 @@
           <a class="nav-item nav-link" id="home" href="/">Home</a>
           <a class="nav-item nav-link" id="logout" href="/profile">Profile</a>
             {% if user.email == "kristian.paivinen@yahoo.com" %}
-              <a class="nav-item nav-link" id="home" href="/suggestions">Suggested plants</a>
+              <!--<a class="nav-item nav-link" id="home" href="/suggestions">Suggested plants</a>-->
             {% endif %}
           {% else %}
           <a class="nav-item nav-link" id="login" href="/login">Login</a>
           <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
           {% endif %}
-          <a class="nav-item nav-link" id="home" href="/plants">Plants</a>
-          <a class="nav-item nav-link" id="home" href="/weather">Weather</a>
+          <!--<a class="nav-item nav-link" id="home" href="/plants">Plants</a>
+          <a class="nav-item nav-link" id="home" href="/weather">Weather</a>-->
           {% if user.is_authenticated %}
             {% if user.email == "kristian.paivinen@yahoo.com" %}
               <a class="nav-item nav-link" style="color: red" id="home" href="/debug"><b>DEBUG</b></a>

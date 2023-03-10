@@ -10,6 +10,7 @@ DB_NAME = "database.db"
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/img/')
 ADMIN = "kristian.paivinen@yahoo.com"
+SIGNUP_ENABLED = True
 
 
 def create_app():
@@ -26,7 +27,7 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import User, Note, Plant, Suggestion
+    from .models import User
     
     with app.app_context():
         db.create_all()
