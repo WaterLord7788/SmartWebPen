@@ -13,6 +13,7 @@
   width: 100%;
 }
 
+
 .wrapper {
   padding: 0;
   display:flex;
@@ -38,15 +39,6 @@
   margin-bottom: 10px;
 }
   
-/*img {
-  width: 100%;
-  height: 100%;
-}*/
-
-.day {
-  width: 20%;
-  height: 20%;
-}
 
 .profile-pic img {
   margin-bottom: 5%;
@@ -59,4 +51,25 @@
 .profile-edit-button {
   margin-right: 10%;
   margin-top: 5%;
+}
+
+
+.container {
+  margin-top: 0%;
+}
+
+.navbar-ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 8%;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+}
+
+li a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
 }
