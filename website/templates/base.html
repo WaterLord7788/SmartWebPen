@@ -17,104 +17,106 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <link href="http://127.0.0.1:5000/static/style.css" rel="stylesheet" type="text/css" />
 
-
-    <ul class="navbar-ul p-3 mb-2 bg-secondary text-white">
-      {% if user.is_authenticated %}
-        <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="home" href="/">Home</a></li>
-        <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="logout" href="/profile">Profile</a></li>
-      {% else %}
-        <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="login" href="/login">Login</a></li>
-        <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="signUp" href="/sign-up">Sign Up</a></li>
-      {% endif %}
-      {% if user.is_authenticated %}
-        {% if user.email == "kristian.paivinen@yahoo.com" %}
-          <li><a class="nav-item nav-link" style="color: red" id="home" href="/debug"><b>DEBUG</b></a></li>
-        {% endif %}
-      {% endif %}
-      {% if user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" style="position: absolute; bottom: 10px;" id="logout" href="/logout">Logout</a>
-        </li>
-      {% endif %}
-    </ul>
-
-
     <title>{% block title %}Home{% endblock %}</title>
   </head>
   <body>
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %} {% if category ==
-    'error' %}
-    <div class="alert alert-danger alter-dismissable fade show" role="alert">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert">
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <div>
+
+      <ul class="navbar-ul p-3 mb-2 bg-secondary text-white">
+        {% if user.is_authenticated %}
+          <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="home" href="/"><b>Home</b></a></li>
+          <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="home" href="/subdomains"><b>Subdomains</b></a></li>
+          <!--<li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="logout" href="/profile">Profile</a></li>-->
+        {% else %}
+          <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="login" href="/login"><b>Login</b></a></li>
+          <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="signUp" href="/sign-up"><b>Sign Up</b></a></li>
+        {% endif %}
+        {% if user.is_authenticated %}
+          {% if user.email == "kristian.paivinen@yahoo.com" %}
+            <li><a class="nav-item nav-link" style="color: red" id="home" href="/debug"><b>DEBUG</b></a></li>
+          {% endif %}
+        {% endif %}
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" style="position: absolute; bottom: 10px;" id="logout" href="/logout"><b>Logout</b></a>
+          </li>
+        {% endif %}
+      </ul>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %} {% if category ==
+      'error' %}
+      <div class="alert alert-danger alter-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% else %}
+      <div class="alert alert-success alter-dismissable fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+      <div class="container">{% block content %} {% endblock %}</div>
+      <script
+        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"
+      ></script>
+
+  {% block javascript %}
+  <script type="text/javascript">
+  function deleteNote(noteId) {
+    fetch("/delete-note", {
+      method: "POST",
+      body: JSON.stringify({ noteId: noteId }),
+    }).then((_res) => {
+      window.location.href = "/";
+    });
+  }
+
+  function deletePlant(plantId) {
+    fetch("/delete-plant", {
+      method: "POST",
+      body: JSON.stringify({ plantId: plantId }),
+    }).then((_res) => {
+      window.location.href = "/plants";
+    });
+  }
+
+  function acceptSuggestion(suggestionId) {
+    fetch("/accept-suggestion", {
+      method: "POST",
+      body: JSON.stringify({ suggestionId: suggestionId }),
+    }).then((_res) => {
+      window.location.href = "/suggestions";
+    });
+  }
+
+  function deleteSuggestion(suggestionId) {
+    fetch("/delete-suggestion", {
+      method: "POST",
+      body: JSON.stringify({ suggestionId: suggestionId }),
+    }).then((_res) => {
+      window.location.href = "/suggestions";
+    });
+  }
+  </script>
+  {% endblock %}
     </div>
-    {% else %}
-    <div class="alert alert-success alter-dismissable fade show" role="alert">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    {% endif %} {% endfor %} {% endif %} {% endwith %}
-
-    <div class="container">{% block content %} {% endblock %}</div>
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-      crossorigin="anonymous"
-    ></script>
-
-{% block javascript %}
-<script type="text/javascript">
-function deleteNote(noteId) {
-  fetch("/delete-note", {
-    method: "POST",
-    body: JSON.stringify({ noteId: noteId }),
-  }).then((_res) => {
-    window.location.href = "/";
-  });
-}
-
-function deletePlant(plantId) {
-  fetch("/delete-plant", {
-    method: "POST",
-    body: JSON.stringify({ plantId: plantId }),
-  }).then((_res) => {
-    window.location.href = "/plants";
-  });
-}
-
-function acceptSuggestion(suggestionId) {
-  fetch("/accept-suggestion", {
-    method: "POST",
-    body: JSON.stringify({ suggestionId: suggestionId }),
-  }).then((_res) => {
-    window.location.href = "/suggestions";
-  });
-}
-
-function deleteSuggestion(suggestionId) {
-  fetch("/delete-suggestion", {
-    method: "POST",
-    body: JSON.stringify({ suggestionId: suggestionId }),
-  }).then((_res) => {
-    window.location.href = "/suggestions";
-  });
-}
-</script>
-{% endblock %}
   </body>
 </html>

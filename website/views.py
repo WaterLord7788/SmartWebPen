@@ -69,3 +69,8 @@ def profile():
         db.session.commit()
         flash('Profile updated!', category='success')
     return render_template('profile.html', user=current_user)
+
+@views.route('/subdomains', methods=['GET', 'POST'])
+@login_required
+def subdomains():
+    return render_template('subdomains.html', user=current_user)

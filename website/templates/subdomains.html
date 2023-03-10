@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+<div class="container">
+    <h1/align="center">Subdomain emumeration</h1>
+    <p/align="center">
+        Supply your target <b>HOST</b> and enumerate all possible subdomains.
+    </p>
+    <div class="box">
+        <ul class="list-group list-group-flush" id="subdomains">
+        
+        <div class="embed">
+            <form method="POST">
+
+                <input/align="center" class="form-control" type="text" placeholder="Subdomain" name="subdomain">
+
+                <div/align="left" class="tools-used-box">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" name="useAMASS" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>AMASS</b>
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="useSubfinder" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>Subfinder</b>
+                        </label><br>
+                    </div>
+                </div>
+
+                <div/align="left" class="wordlist-box">
+                    <div class="form-check">
+                        <input id="reactiveTickbox" class="form-check-input" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
+                            onclick="document.getElementById('wordlist').disabled = false;"
+                        >
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use custom <b>WORDLIST</b>
+                        </label><br>
+                        <input type="text" placeholder="/var/www/wordlists/..." id="wordlist" 
+                            value="" name="customWordlist" disabled="True">
+                    </div>
+                </div>
+
+                <div/align="center">
+                    <button type="submit" class="separate-button btn btn-primary">Start Subdomain Discovery</button>
+                    <br>
+                </div>
+            </form>
+        </div class="embed">
+
+    </div>
+</div>
+
+{% endautoescape %}
+{% endblock %}
