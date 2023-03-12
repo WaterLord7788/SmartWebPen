@@ -52,25 +52,7 @@ def debug():
         execute.close()
         return render_template("debug.html", user=current_user, ADMIN=ADMIN, output=output)
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
-
-
-"""
-@views.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
-    if request.args.get("edit") == "true":
-        return render_template('profile.html', user=current_user, state="Profile edit")
-    elif request.method == 'POST':
-        if request.form.get('description'):
-            new_description = request.form.get('description')
-            current_user.description = new_description
-        if request.form.get('phone'):
-            new_phone = request.form.get('phone')
-            current_user.phone = new_phone
-        db.session.commit()
-        flash('Profile updated!', category='success')
-    return render_template('profile.html', user=current_user)
-"""
+    
 
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
@@ -85,10 +67,13 @@ def subdomains():
             if request.form.get('useCrt.sh'):         tools.append('crt.sh')
             if request.form.get('useCustomWordlist'): tools.append('customWordlist'); files.append(request.form.get('customWordlist'))
             if request.form.get('useAliveCheck'):     methods.append('checkAliveSubdomains')
-            flash('Enumeration started!', category='success')
+            if request.form.get('useScreenshotting'): methods.append('useScreenshotting')
+            flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
+            flash(str('The the following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain")
     return render_template('subdomains.html', user=current_user)
+
 
 @views.route('/ports', methods=['GET', 'POST'])
 @login_required
@@ -99,3 +84,14 @@ def ports():
         else:
             return render_template('ports.html', user=current_user, state="No domain")
     return render_template('ports.html', user=current_user)
+
+
+@views.route('/subdomains/<int:id>/', methods=['GET', 'POST'])
+@login_required
+def getSubdomainScanDetails(id):
+    return str('ID: '+str(id)+'')
+
+@views.route('/ports/<int:id>/', methods=['GET', 'POST'])
+@login_required
+def getPortScanDetails(id):
+    return str('ID: '+str(id)+'')
