@@ -77,7 +77,15 @@ def profile():
 def subdomains():
     if request.method == 'POST':
         if request.form.get('subdomain'):
-            pass
+            tools, methods, files = [], [], []
+            if request.form.get('useAMASS'):          tools.append('amass')
+            if request.form.get('useSubfinder'):      tools.append('subfinder')
+            if request.form.get('useGau'):            tools.append('gau')
+            if request.form.get('useWaybackurls'):    tools.append('waybackurls')
+            if request.form.get('useCrt.sh'):         tools.append('crt.sh')
+            if request.form.get('useCustomWordlist'): tools.append('customWordlist'); files.append(request.form.get('customWordlist'))
+            if request.form.get('useAliveCheck'):     methods.append('checkAliveSubdomains')
+            flash('Enumeration started!', category='success')
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain")
     return render_template('subdomains.html', user=current_user)

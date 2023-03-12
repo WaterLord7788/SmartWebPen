@@ -32,11 +32,21 @@
                         <label class="form-check-label" for="flexCheckDefault">
                         Use <b>Subfinder</b>
                         </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="useGau" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>GAU</b>
+                        </label><br>
                     </div>
                 </div>
 
                 <div/align="left" class="wordlist-box" style="margin-top: 10px;">
                     <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" name="useWaybackurls" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>Waybackurls</b>
+                        </label><br>
+
                         <input id="reactiveTickbox" class="form-check-input" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
                             onclick="document.getElementById('wordlist').disabled = false;">
                         <label class="form-check-label" for="flexCheckDefault">
@@ -46,6 +56,23 @@
                             value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="customWordlist" disabled="True">
                     </div>
                 </div>
+
+
+                <div/align="left" class="tools-used-box" style="margin-top: 10px;">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" name="useCrt.sh" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Use <b>crt.sh</b>
+                        </label><br>
+
+                        <input class="form-check-input" type="checkbox" value="true" name="useAliveCheck" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                        Scan for <b>alive</b> domains?
+                        </label><br>
+                    </div>
+                </div>
+
+
             </div>
 
             <div/align="center" class="submit-button" style="margin-top: 10px;">
