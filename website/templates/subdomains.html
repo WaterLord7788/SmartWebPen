@@ -88,12 +88,16 @@
         </form>
     </div class="embed">
     <div class="results">
+        <li class="list-group-item"></li>
         {% for subdomain in subdomains %}
             <li class="list-group-item">
-            {{ subdomain.data }}
-            <button type="button" class="close" onClick="deleteSubdomain({{ subdomain.id }})">
-                <span aria-hidden="true">&times;</span>
-            </button>
+                <strong>{{ subdomain.url.upper() }}</strong><br>
+                Flags used: {{ subdomain.methods.replace(' ', ', ') }}<br>
+                Tools used: {{ subdomain.tools.replace(' ', ', ') }}<br>
+                Custom wordlists used: {{ subdomain.files.replace(' ', ', ') }}
+                <button type="button" class="close" onClick="deleteSubdomain({{ subdomain.id }})">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </li>
         {% endfor %}
     </div>
