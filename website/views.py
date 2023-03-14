@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
-from .models import User
+from .models import User, Subdomains
 from bs4 import BeautifulSoup
 import requests
 import json
@@ -57,6 +57,7 @@ def debug():
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
 def subdomains():
+    subdomains = Subdomains.query.all()
     if request.method == 'POST':
         if request.form.get('subdomain'):
             tools, methods, files = [], [], []
@@ -70,9 +71,15 @@ def subdomains():
             if request.form.get('useScreenshotting'): methods.append('useScreenshotting')
             flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
             flash(str('The the following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
+
+            # Create subdomains report entry in database.db
+            new_subdomain = Subdomains(data=str([tools, methods, files]))
+            db.session.add(new_subdomain)
+            db.session.commit()
+
         else:
-            return render_template('subdomains.html', user=current_user, state="No subdomain")
-    return render_template('subdomains.html', user=current_user)
+            return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
+    return render_template('subdomains.html', user=current_user, subdomains=subdomains)
 
 
 @views.route('/ports', methods=['GET', 'POST'])

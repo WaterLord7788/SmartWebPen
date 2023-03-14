@@ -86,8 +86,17 @@
             </div>
 
         </form>
-
     </div class="embed">
+    <div class="results">
+        {% for subdomain in subdomains %}
+            <li class="list-group-item">
+            {{ subdomain.data }}
+            <button type="button" class="close" onClick="deleteSubdomain({{ subdomain.id }})">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </li>
+        {% endfor %}
+    </div>
 </div>
 
 {% endautoescape %}
