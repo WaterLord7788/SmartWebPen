@@ -14,12 +14,22 @@ SIGNUP_ENABLED = True
 MIN_NUMER_FILEGENERATOR = 100000
 MAX_NUMBER_FILEGENERATION = 999999 # Useful to set higher in order to increase randomness
 SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated\\subdomains\\')
-if os.path.exists(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY):
+PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated\\ports\\')
+if os.path.exists(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY): 
     pass
-else:
-    print('[Info] No scan output folder found!')
+else: 
+    print('[Info] No subdomain scan output folder found!')
     print('[Info] Creating the necessary folder.')
     os.system('mkdir '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+'')
+    print('[Info] Folder created!')
+if os.path.exists(PORT_SCAN_OUTPUT_DIRECTORY): 
+    pass
+else: 
+    print('[Info] No port scan output folder found!')
+    print('[Info] Creating the necessary folder.')
+    os.system('mkdir '+PORT_SCAN_OUTPUT_DIRECTORY+'')
+    print('[Info] Folder created!')
+
 
 
 def create_app():
