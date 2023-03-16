@@ -11,6 +11,9 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'docx', 'doc'}
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/img/')
 ADMIN = "kristian.paivinen@yahoo.com"
 SIGNUP_ENABLED = True
+MIN_NUMER_FILEGENERATOR = 100000
+MAX_NUMBER_FILEGENERATION = 999999 # Useful to set higher in order to increase randomness
+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/subdomains/')
 
 
 def create_app():
