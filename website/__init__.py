@@ -13,7 +13,13 @@ ADMIN = "kristian.paivinen@yahoo.com"
 SIGNUP_ENABLED = True
 MIN_NUMER_FILEGENERATOR = 100000
 MAX_NUMBER_FILEGENERATION = 999999 # Useful to set higher in order to increase randomness
-SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/subdomains/')
+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated\\subdomains\\')
+if os.path.exists(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY):
+    pass
+else:
+    print('[Info] No scan output folder found!')
+    print('[Info] Creating the necessary folder.')
+    os.system('mkdir '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+'')
 
 
 def create_app():
