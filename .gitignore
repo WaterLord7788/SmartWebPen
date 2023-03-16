@@ -130,5 +130,5 @@ dmypy.json
 
 #Just for testing purposes
 database.db
-.static/img/
-.generated/subdomains/
+Sstatic/img/
+generated/subdomains/
