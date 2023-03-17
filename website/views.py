@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
 from .models import User, Subdomains
 from bs4 import BeautifulSoup
+from .scan import *
 import requests
 import asyncio # For asynchronous completion of os.system() commands
 import random
@@ -56,60 +57,6 @@ def debug():
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
 
-async def intializeEnumeration(tools, methods, files): await executeSubdomainEnumeration(tools, methods, files)
-async def executeSubdomainEnumeration(tools, methods, files):
-    print(tools)
-    cmd = str('ping 127.0.0.1')
-    execute = os.popen(cmd)
-    output = execute.read()
-    execute.close()
-
-    filename = 'ping-'+str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))+'.txt'
-    directory = SUBDOMAIN_SCAN_OUTPUT_DIRECTORY
-    realOutputDirectory = directory+filename
-    with open(realOutputDirectory, "w") as file:
-        file.write(output)
-
-    """
-    for tool in tools.split():
-        print(tool)
-        if tool == 'amass':
-            if files:
-                cmd = str('amass --wordlist '+files+' ')
-            cmd = str('amass')
-            execute = os.popen(cmd); 
-            output = execute.read(); 
-            execute.close()
-        elif tool == 'subfinder':
-            if files:
-                cmd = str('subfinder --wordlist '+files+' ')
-            cmd = str('subfinder')
-            print(cmd)
-            execute = os.popen(cmd); 
-            output = execute.read(); 
-            execute.close()
-        elif tool == 'gau':
-            if files:
-                cmd = str('gau --wordlist '+files+' ')
-            cmd = str('gau')
-            print(cmd)
-            execute = os.popen(cmd); 
-            output = execute.read(); 
-            execute.close()
-        elif tool == 'waybackurls':
-            cmd = str('waybackurls')
-            print(cmd)
-            execute = os.popen(cmd); 
-            output = execute.read(); 
-            execute.close()
-        elif tool == 'crt.sh':
-            cmd = str('curl http://crt.sh/?query=...')
-            print(cmd)
-            execute = os.popen(cmd); 
-            output = execute.read(); 
-            execute.close()
-    """
-
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
 def subdomains():
@@ -137,7 +84,7 @@ def subdomains():
             db.session.add(new_subdomain)
             db.session.commit()
 
-            # Run system command independently
+            # Start executing commands in scan.py file
             asyncio.run(intializeEnumeration(tools, methods, files))
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
