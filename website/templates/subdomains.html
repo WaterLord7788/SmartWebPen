@@ -97,6 +97,8 @@
                 Tools used: {{ subdomain.tools.replace(' ', ', ') }}<br>
                 {% if subdomain.files %}
                     Custom wordlists used: {{ subdomain.files.replace(' ', ', ') }}
+                {% else %}
+                    No Custom wordlists used
                 {% endif %}
                 <button type="button" class="close" onClick="deleteSubdomain({{ subdomain.id }})">
                     <span aria-hidden="true">&times;</span>

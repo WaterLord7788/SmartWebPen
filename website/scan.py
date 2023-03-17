@@ -64,4 +64,13 @@ async def executeSubdomainEnumeration(domain, tools, methods, files):
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
-    
+    for method in methods.split():
+        print(method)
+        if method == 'checkAliveSubdomains':
+            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -title -sc -tech-detect -server | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE.txt ')
+            execute = os.popen(cmd); 
+            output = execute.read(); 
+            execute.close()
+    for file in files.split():
+        print(file)
+    print('[+] Scanning completed! Check logs in website/generated/subdomains')
