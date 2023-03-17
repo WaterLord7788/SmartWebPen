@@ -13,8 +13,8 @@ ADMIN = "kristian.paivinen@yahoo.com"
 SIGNUP_ENABLED = True
 MIN_NUMER_FILEGENERATOR = 100000
 MAX_NUMBER_FILEGENERATION = 999999 # Useful to set higher in order to increase randomness
-SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated\\subdomains\\')
-PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated\\ports\\')
+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/subdomains/')
+PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/ports/')
 
 
 if os.path.exists(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY): 

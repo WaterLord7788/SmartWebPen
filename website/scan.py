@@ -27,6 +27,7 @@ async def executeSubdomainEnumeration(domain, tools, methods, files):
     with open(realOutputDirectory, "w") as file:
         file.write(output)
     """
+    entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
     
     print('[+] Starting subdomain enumeration!   : '+str(tools)+'')
     print('[*] Using the following tools   : '+str(tools)+'')
@@ -35,34 +36,31 @@ async def executeSubdomainEnumeration(domain, tools, methods, files):
     for tool in tools.split():
         print(tool)
         if tool == 'amass':
-            if files: cmd = str('amass --wordlist '+files+' ')
-            cmd = str('amass enum -d '+domain+'')
+            #if files: cmd = str('amass --wordlist '+files+' ')
+            cmd = str('amass enum -active -brute -o '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt -d '+domain+'')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
         elif tool == 'subfinder':
-            if files: cmd = str('subfinder --wordlist '+files+' ')
-            cmd = str('subfinder')
-            print(cmd)
+            #if files: cmd = str('subfinder --wordlist '+files+' ')
+            print(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY)
+            cmd = str('subfinder -all -d '+domain+' -o '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt -rl 10 -silent')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
         elif tool == 'gau':
-            if files: cmd = str('gau --wordlist '+files+' ')
-            cmd = str('gau')
-            print(cmd)
+            #if files: cmd = str('gau --wordlist '+files+' ')
+            cmd = str('printf '+domain+' | gau --subs --blacklist png,jpg,css,js | unfurl domains | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
         elif tool == 'waybackurls':
-            cmd = str('waybackurls')
-            print(cmd)
+            cmd = str('waybackurls '+domain+' | unfurl domains | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
         elif tool == 'crt.sh':
-            cmd = str('curl http://crt.sh/?query=...')
-            print(cmd)
+            cmd = str("curl https://crt.sh/\?q="+domain+"\&output=json | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+""+domain+"-crt.sh-"+entryID+".txt")
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()

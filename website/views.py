@@ -65,13 +65,13 @@ def subdomains():
         if request.form.get('subdomain'):
             # Subdomain sanitization
             domain = request.form.get('subdomain')
-            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '')
+            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
             
             # Get the required options
             tools, methods, files = [], [], []
             if request.form.get('useAMASS'):          tools.append('amass')
             if request.form.get('useSubfinder'):      tools.append('subfinder')
-            if request.form.get('useGau'):            tools.append('gau')
+            #if request.form.get('useGau'):            tools.append('gau')
             if request.form.get('useWaybackurls'):    tools.append('waybackurls')
             if request.form.get('useCrt.sh'):         tools.append('crt.sh')
             if request.form.get('useCustomWordlist'): methods.append('customWordlist'); files.append(request.form.get('customWordlist'))
