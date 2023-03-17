@@ -63,7 +63,12 @@ def subdomains():
     subdomains = Subdomains.query.all()
     if request.method == 'POST':
         if request.form.get('subdomain'):
-            url, tools, methods, files = request.form.get('subdomain'), [], [], []
+            # Subdomain sanitization
+            domain = request.form.get('subdomain')
+            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '')
+            
+            # Get the required options
+            tools, methods, files = [], [], []
             if request.form.get('useAMASS'):          tools.append('amass')
             if request.form.get('useSubfinder'):      tools.append('subfinder')
             if request.form.get('useGau'):            tools.append('gau')
@@ -75,17 +80,18 @@ def subdomains():
             flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
             flash(str('The the following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
 
+            # Convert list to string
             tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
 
             # Create subdomains report entry in database.db
-            new_subdomain = Subdomains(url=url, methods=methods, tools=tools, files=files)
+            new_subdomain = Subdomains(url=domain, methods=methods, tools=tools, files=files)
             db.session.add(new_subdomain)
             db.session.commit()
 
             # Start executing commands in scan.py file
-            asyncio.run(intializeEnumeration(tools, methods, files))
+            asyncio.run(intializeEnumeration(domain, tools, methods, files))
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
     return render_template('subdomains.html', user=current_user, subdomains=subdomains)

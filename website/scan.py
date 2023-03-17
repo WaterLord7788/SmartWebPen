@@ -13,9 +13,9 @@ import json
 import os
 
 
-async def intializeEnumeration(tools, methods, files): await executeSubdomainEnumeration(tools, methods, files)
-async def executeSubdomainEnumeration(tools, methods, files):
-    print(tools)
+async def intializeEnumeration(domain, tools, methods, files): await executeSubdomainEnumeration(domain, tools, methods, files)
+async def executeSubdomainEnumeration(domain, tools, methods, files):
+    """"
     cmd = str('ping 127.0.0.1')
     execute = os.popen(cmd)
     output = execute.read()
@@ -26,28 +26,29 @@ async def executeSubdomainEnumeration(tools, methods, files):
     realOutputDirectory = directory+filename
     with open(realOutputDirectory, "w") as file:
         file.write(output)
-
     """
+    
+    print('[+] Starting subdomain enumeration!   : '+str(tools)+'')
+    print('[*] Using the following tools   : '+str(tools)+'')
+    print('[*] Using the following methods : '+str(methods)+'')
+    print('[*] Using the following files   : '+str(files)+'')
     for tool in tools.split():
         print(tool)
         if tool == 'amass':
-            if files:
-                cmd = str('amass --wordlist '+files+' ')
-            cmd = str('amass')
+            if files: cmd = str('amass --wordlist '+files+' ')
+            cmd = str('amass enum -d '+domain+'')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
         elif tool == 'subfinder':
-            if files:
-                cmd = str('subfinder --wordlist '+files+' ')
+            if files: cmd = str('subfinder --wordlist '+files+' ')
             cmd = str('subfinder')
             print(cmd)
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
         elif tool == 'gau':
-            if files:
-                cmd = str('gau --wordlist '+files+' ')
+            if files: cmd = str('gau --wordlist '+files+' ')
             cmd = str('gau')
             print(cmd)
             execute = os.popen(cmd); 
@@ -65,4 +66,4 @@ async def executeSubdomainEnumeration(tools, methods, files):
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
-    """
+    
