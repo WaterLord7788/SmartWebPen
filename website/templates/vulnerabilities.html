@@ -9,9 +9,9 @@
     </button>
 </div>
 {% endif %}
-<h1/align="center" style="margin-top: 2%;">Subdomain emumeration</h1>
+<h1/align="center" style="margin-top: 2%;">Vulnerability scanner</h1>
 <p/align="center">
-    Supply your target <b>HOST</b> and enumerate all possible subdomains.
+    Supply your target <b>HOST</b> and scan for vulnerabilities.
 </p>
 <div class="box">
     <ul class="list-group list-group-flush" id="subdomains">
@@ -19,25 +19,20 @@
     <div class="embed">
         <form method="POST">
             <div>
-                <input/align="center" class="form-control" type="text" placeholder="Subdomain" name="subdomain">
+                <input/align="center" class="form-control" type="text" placeholder="Domain - www.example.com or www1.example.com,ww2.example.com" name="subdomain">
 
                 <div/align="left" class="tools-used-box" style="margin-top: 10px;">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="true" name="useAMASS" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>AMASS</b>
+                        <b>CRLF</b>
                         </label><br>
 
                         <input class="form-check-input" type="checkbox" value="true" name="useSubfinder" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>Subfinder</b>
+                        <b>XSS</b>
                         </label><br>
 
-                        <input class="form-check-input" type="checkbox" value="true" name="useGau" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>GAU</b>
-                        </label><br>
-                        <!-- Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e-->
                     </div>
                 </div>
 
@@ -45,7 +40,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="true" name="useWaybackurls" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>Waybackurls</b>
+                        <b>SQLi</b>
                         </label><br>
 
                         <input id="reactiveTickbox" class="form-check-input" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
@@ -59,7 +54,7 @@
                 </div>
 
 
-                <div/align="left" class="tools-used-box" style="margin-top: 10px;">
+                <!--<div/align="left" class="tools-used-box" style="margin-top: 10px;">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="true" name="useCrt.sh" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
@@ -76,7 +71,7 @@
                         Screenshot <b>alive</b> domains
                         </label><br>
                     </div>
-                </div>
+                </div>-->
 
 
             </div>

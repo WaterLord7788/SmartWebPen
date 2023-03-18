@@ -15,8 +15,10 @@ MIN_NUMER_FILEGENERATOR = 100000
 MAX_NUMBER_FILEGENERATION = 999999 # Useful to set higher in order to increase randomness
 SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/subdomains/')
 PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/ports/')
+VULNERABILITY_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/vulnerabilities/')
 
 
+# Check availability of required folders
 if os.path.exists(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY): 
     pass
 else: 
@@ -30,6 +32,13 @@ else:
     print('[Info] No port scan output folder found!')
     print('[Info] Creating the necessary folder.')
     os.system('mkdir '+PORT_SCAN_OUTPUT_DIRECTORY+'')
+    print('[Info] Folder created!')
+if os.path.exists(VULNERABILITY_SCAN_OUTPUT_DIRECTORY): 
+    pass
+else: 
+    print('[Info] No vulnerability scan output folder found!')
+    print('[Info] Creating the necessary folder.')
+    os.system('mkdir '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+'')
     print('[Info] Folder created!')
 
 # Check required dependencies

@@ -97,6 +97,19 @@ def subdomains():
     return render_template('subdomains.html', user=current_user, subdomains=subdomains)
 
 
+@views.route('/vulnerabilities', methods=['GET', 'POST'])
+@login_required
+def vulnerabilities():
+    #subdomains = Subdomains.query.all()
+    if request.method == 'POST':
+        if request.form.get('subdomain'):
+            pass
+        else:
+            #return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
+            pass
+    return render_template('vulnerabilities.html', user=current_user)#, vulnerabilities=vulnerabilities)
+
+
 @views.route('/ports', methods=['GET', 'POST'])
 @login_required
 def ports():
