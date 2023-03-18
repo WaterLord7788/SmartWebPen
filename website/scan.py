@@ -29,12 +29,12 @@ async def executeSubdomainEnumeration(domain, tools, methods, files):
     """
     entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
     
-    print('[+] Starting subdomain enumeration!   : '+str(tools)+'')
+    print('[+] Starting subdomain enumeration!')
     print('[*] Using the following tools   : '+str(tools)+'')
     print('[*] Using the following methods : '+str(methods)+'')
     print('[*] Using the following files   : '+str(files)+'')
     for tool in tools.split():
-        print(tool)
+        print('[*] Executing '+tool+'')
         if tool == 'amass':
             #if files: cmd = str('amass --wordlist '+files+' ')
             cmd = str('amass enum -active -brute -o '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt -d '+domain+'')
@@ -59,18 +59,18 @@ async def executeSubdomainEnumeration(domain, tools, methods, files):
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
-        elif tool == 'crt.sh':
-            cmd = str("curl https://crt.sh/\?q="+domain+"\&output=json | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+""+domain+"-crt.sh-"+entryID+".txt")
+        """elif tool == 'crt.sh':
+            cmd = str("curl 'https://crt.sh/?q="+domain+"\&output=json' | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+""+domain+"-crt.sh-"+entryID+".txt")
             execute = os.popen(cmd); 
             output = execute.read(); 
-            execute.close()
+            execute.close()"""
     for method in methods.split():
-        print(method)
+        print('[*] Using method '+method+'')
         if method == 'checkAliveSubdomains':
             cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -title -sc -tech-detect -server -no-color | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE.txt ')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
     for file in files.split():
-        print(file)
+        print('[*] Using file '+file+'')
     print('[+] Scanning completed! Check logs in website/generated/subdomains')

@@ -71,7 +71,7 @@ def subdomains():
             tools, methods, files = [], [], []
             if request.form.get('useAMASS'):          tools.append('amass')
             if request.form.get('useSubfinder'):      tools.append('subfinder')
-            #if request.form.get('useGau'):            tools.append('gau')
+            if request.form.get('useGau'):            tools.append('gau')
             if request.form.get('useWaybackurls'):    tools.append('waybackurls')
             if request.form.get('useCrt.sh'):         tools.append('crt.sh')
             if request.form.get('useCustomWordlist'): methods.append('customWordlist'); files.append(request.form.get('customWordlist'))
@@ -103,11 +103,35 @@ def vulnerabilities():
     #subdomains = Subdomains.query.all()
     if request.method == 'POST':
         if request.form.get('subdomain'):
-            pass
+            # Subdomain sanitization
+            domain = request.form.get('subdomain')
+            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
+            
+            # Get the required options
+            tools, methods, files = [], [], []
+            if request.form.get('CRLF'):          tools.append('CRLF')
+            if request.form.get('XSS'):      tools.append('XSS')
+            if request.form.get('SQLi'):    tools.append('SQLi')
+            if request.form.get('Nuclei'):         tools.append('Nuclei')
+            if request.form.get('useCustomWordlist'): methods.append('customWordlist'); files.append(request.form.get('customWordlist'))
+            flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
+            flash(str('The the following <b>vulnerabilities</b> are going to be tested for: '+str(tools)+''), category='info')
+
+            # Convert list to string
+            tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+
+            # Create subdomains report entry in database.db
+            new_vulnerability = Vulnerabilities(url=domain, methods=methods, tools=tools, files=files)
+            db.session.add(new_vulnerability)
+            db.session.commit()
+
+            # Start executing commands in scan.py file
+            asyncio.run(intializeEnumeration(domain, tools, methods, files))
         else:
-            #return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
-            pass
-    return render_template('vulnerabilities.html', user=current_user)#, vulnerabilities=vulnerabilities)
+            return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
+    return render_template('subdomains.html', user=current_user, subdomains=subdomains)
 
 
 @views.route('/ports', methods=['GET', 'POST'])
