@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
-from .models import User, Subdomains
+from .models import User, Subdomains, Vulnerabilities
 from bs4 import BeautifulSoup
 from .scan import *
 import requests
@@ -78,7 +78,7 @@ def subdomains():
             if request.form.get('useAliveCheck'):     methods.append('checkAliveSubdomains')
             if request.form.get('useScreenshotting'): methods.append('useScreenshotting')
             flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-            flash(str('The the following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
+            flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
 
             # Convert list to string
             tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
@@ -91,7 +91,7 @@ def subdomains():
             db.session.commit()
 
             # Start executing commands in scan.py file
-            asyncio.run(intializeEnumeration(domain, tools, methods, files))
+            intializeEnumeration(domain, tools, methods, files)
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
     return render_template('subdomains.html', user=current_user, subdomains=subdomains)
@@ -100,7 +100,7 @@ def subdomains():
 @views.route('/vulnerabilities', methods=['GET', 'POST'])
 @login_required
 def vulnerabilities():
-    #subdomains = Subdomains.query.all()
+    vulnerabilities = Vulnerabilities.query.all()
     if request.method == 'POST':
         if request.form.get('subdomain'):
             # Subdomain sanitization
@@ -114,24 +114,24 @@ def vulnerabilities():
             if request.form.get('SQLi'):    tools.append('SQLi')
             if request.form.get('Nuclei'):         tools.append('Nuclei')
             if request.form.get('useCustomWordlist'): methods.append('customWordlist'); files.append(request.form.get('customWordlist'))
-            flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-            flash(str('The the following <b>vulnerabilities</b> are going to be tested for: '+str(tools)+''), category='info')
+            flash(str('<b>Vulnerability scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
+            flash(str('The following <b>vulnerabilities</b> are going to be tested for: '+str(tools)+''), category='info')
 
             # Convert list to string
             tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
 
-            # Create subdomains report entry in database.db
+            # Create vulnerability scan report entry in database.db
             new_vulnerability = Vulnerabilities(url=domain, methods=methods, tools=tools, files=files)
             db.session.add(new_vulnerability)
             db.session.commit()
 
             # Start executing commands in scan.py file
-            asyncio.run(intializeEnumeration(domain, tools, methods, files))
+            intializeVulnerabilityScanning(domain, tools, methods, files)
         else:
-            return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
-    return render_template('subdomains.html', user=current_user, subdomains=subdomains)
+            return render_template('vulnerabilities.html', user=current_user, state="No subdomain", vulnerabilities=vulnerabilities)
+    return render_template('vulnerabilities.html', user=current_user, vulnerabilities=vulnerabilities)
 
 
 @views.route('/ports', methods=['GET', 'POST'])
