@@ -30,6 +30,7 @@ class Subdomains(db.Model, UserMixin):
     files = db.Column(db.String(1000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    entryID = db.Column(db.String(50))
 
 class Vulnerabilities(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,3 +40,4 @@ class Vulnerabilities(db.Model, UserMixin):
     files = db.Column(db.String(1000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    entryID = db.Column(db.String(50))

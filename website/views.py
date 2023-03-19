@@ -84,14 +84,15 @@ def subdomains():
             tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
             # Create subdomains report entry in database.db
-            new_subdomain = Subdomains(url=domain, methods=methods, tools=tools, files=files)
+            new_subdomain = Subdomains(url=domain, methods=methods, tools=tools, files=files, entryID=entryID)
             db.session.add(new_subdomain)
             db.session.commit()
 
             # Start executing commands in scan.py file
-            intializeEnumeration(domain, tools, methods, files)
+            executeSubdomainEnumeration(domain, tools, methods, files, entryID)
         else:
             return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
     return render_template('subdomains.html', user=current_user, subdomains=subdomains)
@@ -121,14 +122,15 @@ def vulnerabilities():
             tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
             # Create vulnerability scan report entry in database.db
-            new_vulnerability = Vulnerabilities(url=domain, methods=methods, tools=tools, files=files)
+            new_vulnerability = Vulnerabilities(url=domain, methods=methods, tools=tools, files=files, entryID=entryID)
             db.session.add(new_vulnerability)
             db.session.commit()
 
             # Start executing commands in scan.py file
-            intializeVulnerabilityScanning(domain, tools, methods, files)
+            executeVulnerabilityScanning(domain, tools, methods, files, entryID)
         else:
             return render_template('vulnerabilities.html', user=current_user, state="No subdomain", vulnerabilities=vulnerabilities)
     return render_template('vulnerabilities.html', user=current_user, vulnerabilities=vulnerabilities)
@@ -153,4 +155,9 @@ def getSubdomainScanDetails(id):
 @views.route('/ports/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def getPortScanDetails(id):
+    return str('ID: '+str(id)+'')
+
+@views.route('/vulnerabilities/<int:id>/', methods=['GET', 'POST'])
+@login_required
+def getVulnerabilityScanDetails(id):
     return str('ID: '+str(id)+'')

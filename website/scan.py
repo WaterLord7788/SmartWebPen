@@ -13,9 +13,8 @@ import json
 import os
 
 
-def intializeEnumeration(domain, tools, methods, files): executeSubdomainEnumeration(domain, tools, methods, files)
 def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
-    """"
+    """
     cmd = str('ping 127.0.0.1')
     execute = os.popen(cmd)
     output = execute.read()
@@ -27,9 +26,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     with open(realOutputDirectory, "w") as file:
         file.write(output)
     """
-    entryID = entryID
-    
-    print('[+] Starting subdomain enumeration!')
+    print(); print('[+] Starting subdomain enumeration!')
     print('[*] Using the following tools   : '+str(tools)+'')
     print('[*] Using the following methods : '+str(methods)+'')
     print('[*] Using the following files   : '+str(files)+'')
@@ -77,12 +74,9 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print('[*] Using file '+file+'')
     print('[+] Scanning completed! Check logs in website/generated/subdomains')
 
-def intializeVulnerabilityScanning(domain, tools, methods, files): executeVulnerabilityScanning(domain, tools, methods, files)
-def executeVulnerabilityScanning(domain, tools, methods, files):
-    entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
-    
-    print()
-    print('[*] Initiating vulnerability scanning!')
+
+def executeVulnerabilityScanning(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
+    print(); print('[*] Initiating vulnerability scanning!')
     print('[*] Gathering subdomains for '+domain+'')
     executeSubdomainEnumeration(domain=domain, tools="amass subfinder gau waybackurls",
                                 methods="customWordlist checkAliveSubdomains useScreenshotting",
