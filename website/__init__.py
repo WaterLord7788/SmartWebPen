@@ -1,48 +1,26 @@
 from flask import Flask, flash, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from os import path
 from flask_login import LoginManager
 from os.path import join, dirname, realpath
+from os import path
 import os
+
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'docx', 'doc'}
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/img/')
+
 ADMIN = "kristian.paivinen@yahoo.com"
 SIGNUP_ENABLED = True
+
 MIN_NUMER_FILEGENERATOR = 100000
 MAX_NUMBER_FILEGENERATION = 999999 # Useful to set higher in order to increase randomness
-SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/subdomains/')
-PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/ports/')
-VULNERABILITY_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), 'generated/vulnerabilities/')
 
-
-# Check availability of required folders
-if os.path.exists(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY): 
-    pass
-else: 
-    print('[-] No subdomain scan output folder found!')
-    print('[*] Creating the necessary folder.')
-    os.system('mkdir '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+'')
-    print('[+] Folder created!')
-if os.path.exists(PORT_SCAN_OUTPUT_DIRECTORY): 
-    pass
-else: 
-    print('[Info] No port scan output folder found!')
-    print('[Info] Creating the necessary folder.')
-    os.system('mkdir '+PORT_SCAN_OUTPUT_DIRECTORY+'')
-    print('[Info] Folder created!')
-if os.path.exists(VULNERABILITY_SCAN_OUTPUT_DIRECTORY): 
-    pass
-else: 
-    print('[Info] No vulnerability scan output folder found!')
-    print('[Info] Creating the necessary folder.')
-    os.system('mkdir '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+'')
-    print('[Info] Folder created!')
-
-# Check required dependencies
-
+GENERATED_OUTPUT_DIRECTORY = 'generated/'
+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY, 'subdomains/')
+PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY, 'ports/')
+VULNERABILITY_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY, 'vulnerabilities/')
 
 
 def create_app():
@@ -71,6 +49,9 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
+    
+    from .check import checkForFolders
+    checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
 
     return app
 

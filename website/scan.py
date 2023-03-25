@@ -34,7 +34,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print('[*] Executing '+tool+'')
         if tool == 'amass':
             #if files: cmd = str('amass --wordlist '+files+' ')
-            cmd = str('amass enum -active -brute -o '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt -d '+domain+'')
+            cmd = str('amass enum -active -brute -d '+domain+' | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
