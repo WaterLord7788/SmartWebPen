@@ -52,3 +52,13 @@ def installTools():
         print('[*] Installing httpx')
         os.popen('go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest')
         print('[+] Done installing httpx!'); print()
+
+    com_str = 'which nuclei'
+    command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
+    (output, error) = command.communicate()
+    if 'nuclei' not in str(output):
+        # Installing nuclei
+        print('[-] Nuclei not present')
+        print('[*] Installing nuclei')
+        os.popen('go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest')
+        print('[+] Done installing nuclei!'); print()

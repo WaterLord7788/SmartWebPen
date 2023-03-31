@@ -69,16 +69,16 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print('[*] Using method                : '+method+'')
         if method == 'checkAliveSubdomains':
             # Raw output
-            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITHOUT_STATS-'+entryID+'.txt ')
+            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt ')
             execute = os.popen(cmd)
             output = execute.read()
-            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITHOUT_STATS-'+entryID+'.txt'))
+            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt'))
             execute.close()
             # Output with additional data. For user to read through.
-            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt ) | httpx -title -sc -tech-detect -fr -server -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITH_STATS-'+entryID+'.txt ')
+            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt ) | httpx -title -cl -sc -tech-detect -fr -server -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE+STATS-'+entryID+'.txt ')
             execute = os.popen(cmd)
             output = execute.read()
-            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITH_STATS-'+entryID+'.txt'))
+            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE+STATS-'+entryID+'.txt'))
             execute.close()
     for file in files.split():
         print('[*] Using file                  : '+file+'')
@@ -92,10 +92,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 def executeVulnerabilityScanning(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
     print(); print('[*] Initiating vulnerability scanning!')
     print('[*] Gathering subdomains for '+domain+'')
-    executeSubdomainEnumeration(domain=domain, tools="amass subfinder gau waybackurls",
-                                methods="customWordlist checkAliveSubdomains useScreenshotting",
-                                files="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt",
-                                entryID=entryID)
+    executeSubdomainEnumeration(domain=domain, tools="amass subfinder gau waybackurls", methods="customWordlist checkAliveSubdomains useScreenshotting", files="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt", entryID=entryID)
     print(); print('[*] Starting vulnerability scanning!')
     print('[*] Using the following tools   : '+str(tools)+'')
     print('[*] Using the following methods : '+str(methods)+'')
@@ -104,8 +101,13 @@ def executeVulnerabilityScanning(domain, tools, methods, files, entryID=str(rand
     for tool in tools.split():
         print('[*] Executing scanning for      : '+str(tool)+'')
         if tool == 'CRLF':
-            #if files: cmd = str('amass --wordlist '+files+' ')
-            cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %s://%d | httpx | while read -r line; do curl -s -I -X GET $line/%0D%0A%20Set-Cookie:testingForCRLF=true && curl -s -I -X GET $line/%E5%98%8D%E5%98%8Set-Cookie:testingForCRLF=true ; done | tee '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+''+domain+'-CRLF-'+entryID+'.txt')
+            cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt | while read -r line; do echo && echo $line/%0D%0A%20Set-Cookie:%20testingForCRLF=true && curl -s -I -X GET $line/%0D%0A%20Set-Cookie:%20testingForCRLF=true && echo $line/%E5%98%8D%E5%98%8Set-Cookie:%20testingForCRLF=true && curl -s -I -X GET $line/%E5%98%8D%E5%98%8Set-Cookie:%20testingForCRLF=true && echo ; done | tee '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+''+domain+'-CRLF-'+entryID+'.txt')
+            execute = os.popen(cmd); 
+            output = execute.read(); 
+            execute.close()
+        elif tool == 'XSS':
+            #  dalfox file output.txt --only-poc='g,r,v' --skip-mining-dict -S --no-color | tee report
+            cmd = str('dalfox file '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt --only-poc="g,r,v" --skip-mining-dict -S --no-color | tee '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+''+domain+'-XSS-'+entryID+'.txt')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()

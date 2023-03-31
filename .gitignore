@@ -131,6 +131,7 @@ dmypy.json
 #Just for testing purposes
 database.db
 Sstatic/img/
+website/__pycache__/*
 website/generated/ports/*
 website/generated/subdomains/*
 website/generated/vulnerabilities/*
