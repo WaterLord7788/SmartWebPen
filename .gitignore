@@ -131,4 +131,9 @@ dmypy.json
 #Just for testing purposes
 database.db
 Sstatic/img/
-generated/subdomains/*
+website/generated/ports/*
+website/generated/subdomains/*
+website/generated/vulnerabilities/*
+website/generated/ports/*.txt
+website/generated/subdomains/*.txt
+website/generated/vulnerabilities/*.txt

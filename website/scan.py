@@ -41,9 +41,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             output = execute.read()
             execute.close()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt'))
-            print(output)
         elif tool == 'subfinder':
-            print(SUBDOMAIN_SCAN_OUTPUT_DIRECTORY)
             cmd = str('subfinder -all -d '+domain+' -o '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt -rl 10 -silent')
             execute = os.popen(cmd)
             output = execute.read()
@@ -70,15 +68,22 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     for method in methods.split():
         print('[*] Using method                : '+method+'')
         if method == 'checkAliveSubdomains':
-            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -title -sc -tech-detect -fr -server -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt ')
+            # Raw output
+            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITHOUT_STATS-'+entryID+'.txt ')
             execute = os.popen(cmd)
             output = execute.read()
-            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt'))
+            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITHOUT_STATS-'+entryID+'.txt'))
+            execute.close()
+            # Output with additional data. For user to read through.
+            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt ) | httpx -title -sc -tech-detect -fr -server -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITH_STATS-'+entryID+'.txt ')
+            execute = os.popen(cmd)
+            output = execute.read()
+            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE_WITH_STATS-'+entryID+'.txt'))
             execute.close()
     for file in files.split():
         print('[*] Using file                  : '+file+'')
 
-    print('[*] Resulting files created     : '+resultFiles+'')
+    print('[+] Resulting files created     : '+str(resultFiles)+'')
     Subdomains.query.filter_by(entryID=entryID).resultFiles = resultFiles
     db.session.commit()
     print('[+] Scanning completed! Check logs in '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+'')
@@ -97,10 +102,10 @@ def executeVulnerabilityScanning(domain, tools, methods, files, entryID=str(rand
     print('[*] Using the following files   : '+str(files)+'')
 
     for tool in tools.split():
-        print('[*] Executing scanning for      : '+tool+'')
+        print('[*] Executing scanning for      : '+str(tool)+'')
         if tool == 'CRLF':
             #if files: cmd = str('amass --wordlist '+files+' ')
-            cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-ALIVE-'+entryID+'.txt | while read -r line; do curl -iL http://$line/%0D%0A%20Set-Cookie:testingForCRLF=true && curl -iL http://$line/%E5%98%8D%E5%98%8Set-Cookie:testingForCRLF=true ; done | tee '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+''+domain+'-CRLF-'+entryID+'.txt')
+            cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %s://%d | httpx | while read -r line; do curl -s -I -X GET $line/%0D%0A%20Set-Cookie:testingForCRLF=true && curl -s -I -X GET $line/%E5%98%8D%E5%98%8Set-Cookie:testingForCRLF=true ; done | tee '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+''+domain+'-CRLF-'+entryID+'.txt')
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()
