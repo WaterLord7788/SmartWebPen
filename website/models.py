@@ -28,6 +28,7 @@ class Subdomains(db.Model, UserMixin):
     methods = db.Column(db.String(1000))
     tools = db.Column(db.String(1000))
     files = db.Column(db.String(1000))
+    resultFiles = db.Column(db.String(1000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     entryID = db.Column(db.String(50))
