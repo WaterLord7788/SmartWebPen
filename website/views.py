@@ -1,19 +1,28 @@
+from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for
-from flask import Flask, render_template, session
-from flask_login import login_required, current_user
-from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY
-from werkzeug.utils import secure_filename
-from os.path import join, dirname, realpath
+from .check import checkForFolders      # Checking for necessary folders
+from .installation import installTools  # Checking for necessary tools
+import asyncio # For asynchronous completion of os.system() commands
 from .models import User, Subdomains, Vulnerabilities
+from flask_login import login_required, current_user
+from flask import Flask, render_template, session
+from os.path import join, dirname, realpath
+from werkzeug.utils import secure_filename
 from bs4 import BeautifulSoup
 from .scan import *
 import requests
-import asyncio # For asynchronous completion of os.system() commands
 import random
 import json
 import os
 
+
 views = Blueprint('views', __name__)
+
+
+@views.before_app_first_request
+def setup():
+    checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
+    installTools()
 
 
 @views.route('/', methods=['GET', 'POST'])

@@ -1,9 +1,7 @@
 from flask import Flask, flash, request, redirect, url_for
+from os.path import join, dirname, realpath
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from os.path import join, dirname, realpath
-from .check import checkForFolders # Checking for necessary folders
-from .installation import installTools  # Checking for necessary tools
 from os import path
 import os
 
@@ -25,8 +23,6 @@ SUBDOMAIN_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OU
 PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY, 'ports/')
 VULNERABILITY_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY, 'vulnerabilities/')
 
-checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
-installTools()
 
 
 def create_app():
