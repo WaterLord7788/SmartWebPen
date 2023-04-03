@@ -2,13 +2,14 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERA
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for
 from .check import checkForFolders      # Checking for necessary folders
 from .installation import installTools  # Checking for necessary tools
-import asyncio # For asynchronous completion of os.system() commands
-from .models import User, Subdomains, Vulnerabilities
+import asyncio                          # For asynchronous completion of os.system() commands
+from .models import User, Scan
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
 from os.path import join, dirname, realpath
 from werkzeug.utils import secure_filename
 from bs4 import BeautifulSoup
+from threading import Thread
 from .scan import *
 import requests
 import random
@@ -28,7 +29,61 @@ def setup():
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template("home.html", user=current_user, ADMIN=ADMIN)
+    if request.method == 'POST':
+        if request.form.get('subdomain'):
+            # Subdomain sanitization
+            domain = request.form.get('subdomain')
+            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
+            # Get the required options
+            tools, methods, files, vulnerabilities = [], [], [], []
+
+            if request.form.get('useAMASS'):          tools.append('amass')
+            if request.form.get('useSubfinder'):      tools.append('subfinder')
+            if request.form.get('useGau'):            tools.append('gau')
+            if request.form.get('useWaybackurls'):    tools.append('waybackurls')
+            if request.form.get('useCrt.sh'):         tools.append('crt.sh')
+            if request.form.get('useCustomWordlistForSubdomains'): 
+                methods.append('customWordlistForSubdomains')
+                files.append(request.form.get('customWordlistForSubdomains'))
+            if request.form.get('useAliveCheck'):     methods.append('checkAliveSubdomains')
+            if request.form.get('useScreenshotting'): methods.append('useScreenshotting')
+            if request.form.get('exposedPorts'):      methods.append('checkExposedPorts')
+
+            if request.form.get('doVulnerabilityScanning'):
+                if request.form.get('CRLF'):                                vulnerabilities.append('CRLF')
+                if request.form.get('XSS'):                                 vulnerabilities.append('XSS')
+                if request.form.get('SQLi'):                                vulnerabilities.append('SQLi')
+                if request.form.get('Nuclei'):                              vulnerabilities.append('Nuclei')
+                if request.form.get('useCustomWordlistForVulnerabilities'): 
+                    methods.append('customWordlistForVulnerabilities')
+                    files.append(request.form.get('customWordlistForVulnerabilities'))
+            
+            # Convert list to string.
+            tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            vulnerabilities = str(vulnerabilities).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
+
+            # Create scanning report entry in database.db.
+            new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, vulnerabilities=vulnerabilities, entryID=entryID)
+            db.session.add(new_scan)
+            db.session.commit()
+
+            # Start executing commands in scan.py file.
+            executeSubdomainEnumeration(domain, tools, methods, files, entryID)
+
+            # Start executing vulnerability scanning, if user decided to do so.
+            if request.form.get('doVulnerabilityScanning'):
+                executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
+            
+            flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
+            flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
+            #flash(str('Something went <b>wrong</b>! Try again..'), category='error')
+
+        else:
+            return render_template('home.html', user=current_user, state="No subdomain")
+    return render_template('home.html', user=current_user)
 
 
 def allowed_file(filename):
@@ -66,45 +121,12 @@ def debug():
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
 
+
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
 def subdomains():
-    subdomains = Subdomains.query.all()
-    if request.method == 'POST':
-        if request.form.get('subdomain'):
-            # Subdomain sanitization
-            domain = request.form.get('subdomain')
-            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
-            
-            # Get the required options
-            tools, methods, files = [], [], []
-            if request.form.get('useAMASS'):          tools.append('amass')
-            if request.form.get('useSubfinder'):      tools.append('subfinder')
-            if request.form.get('useGau'):            tools.append('gau')
-            if request.form.get('useWaybackurls'):    tools.append('waybackurls')
-            if request.form.get('useCrt.sh'):         tools.append('crt.sh')
-            if request.form.get('useCustomWordlist'): methods.append('customWordlist'); files.append(request.form.get('customWordlist'))
-            if request.form.get('useAliveCheck'):     methods.append('checkAliveSubdomains')
-            if request.form.get('useScreenshotting'): methods.append('useScreenshotting')
-            flash(str('<b>Enumeration started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-            flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
-
-            # Convert list to string
-            tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
-
-            # Create subdomains report entry in database.db
-            new_subdomain = Subdomains(url=domain, methods=methods, tools=tools, files=files, entryID=entryID)
-            db.session.add(new_subdomain)
-            db.session.commit()
-
-            # Start executing commands in scan.py file
-            executeSubdomainEnumeration(domain, tools, methods, files, entryID)
-        else:
-            return render_template('subdomains.html', user=current_user, state="No subdomain", subdomains=subdomains)
-    return render_template('subdomains.html', user=current_user, subdomains=subdomains)
+    scans = Scan.query.all()
+    return render_template('subdomains.html', user=current_user, scans=scans)
 
 
 @views.route('/vulnerabilities', methods=['GET', 'POST'])
@@ -143,6 +165,7 @@ def vulnerabilities():
         else:
             return render_template('vulnerabilities.html', user=current_user, state="No subdomain", vulnerabilities=vulnerabilities)
     return render_template('vulnerabilities.html', user=current_user, vulnerabilities=vulnerabilities)
+
 
 
 @views.route('/ports', methods=['GET', 'POST'])

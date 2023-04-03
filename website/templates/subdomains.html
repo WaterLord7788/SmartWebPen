@@ -17,92 +17,24 @@
     <ul class="list-group list-group-flush" id="subdomains">
     
     <div class="embed">
-        <form method="POST">
-            <div>
-                <input/align="center" class="form-control" type="text" placeholder="Subdomain" name="subdomain">
-
-                <div/align="left" class="tools-used-box" style="margin-top: 10px;">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="true" name="useAMASS" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>AMASS</b>
-                        </label><br>
-
-                        <input class="form-check-input" type="checkbox" value="true" name="useSubfinder" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>Subfinder</b>
-                        </label><br>
-
-                        <input class="form-check-input" type="checkbox" value="true" name="useGau" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>GAU</b>
-                        </label><br>
-                        <!-- Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e-->
-                    </div>
-                </div>
-
-                <div/align="left" class="wordlist-box" style="margin-top: 10px;">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="true" name="useWaybackurls" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>Waybackurls</b>
-                        </label><br>
-
-                        <input id="reactiveTickbox" class="form-check-input" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
-                            onclick="document.getElementById('wordlist').disabled = false;">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Use custom <b>WORDLIST</b>
-                        </label><br>
-                        <input type="text" placeholder="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" id="wordlist" 
-                            value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="customWordlist" disabled="True">
-                    </div>
-                </div>
-
-
-                <div/align="left" class="tools-used-box" style="margin-top: 10px;">
-                    <div class="form-check">
-                        <!--<input class="form-check-input" type="checkbox" value="true" name="useCrt.sh" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Use <b>crt.sh</b>
-                        </label><br>-->
-
-                        <input class="form-check-input" type="checkbox" value="true" name="useAliveCheck" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Scan for <b>alive</b> domains
-                        </label><br>
-
-                        <input class="form-check-input" type="checkbox" value="true" name="useScreenshotting" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                        Screenshot <b>alive</b> domains
-                        </label><br>
-                    </div>
-                </div>
-
-
-            </div>
-
-            <div/align="center" class="submit-button" style="margin-top: 10px;">
-                <button type="submit" class="separate-button btn btn-primary">Start Subdomain Discovery</button>
-                <br>
-            </div>
-
-        </form>
+        <!-- Nothing here :D -->
     </div class="embed">
-    <div class="results">
+
+    <div class="results"> <!--style="border:solid 1px black; padding: 5px;">-->
         <li class="list-group-item"></li>
-        {% for subdomain in subdomains %}
+        {% for scan in scans %}
             <li class="list-group-item">
-                <strong>{{ subdomain.url.upper() }}</strong><br>
-                Flags used: {{ subdomain.methods.replace(' ', ', ') }}<br>
-                Tools used: {{ subdomain.tools.replace(' ', ', ') }}<br>
-                {% if subdomain.files %}
-                    Custom wordlists used: {{ subdomain.files.replace(' ', ', ') }}
-                {% else %}
-                    No Custom wordlists used
-                {% endif %}
-                <button type="button" class="close" onClick="deleteSubdomain({{ subdomain.id }})">
+                <strong><a href="//127.0.0.1:5000/subdomains/{{ scan.entryID }}/" target="_blank">{{ scan.url.upper() }}</a></strong>
+                Methods used&nbsp;&nbsp;: {{ scan.methods }}<br>
+                Tools used&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.tools }}<br>
+                Resulted files&nbsp;&nbsp;&nbsp;: {{ scan.resultFiles }}<br>
+                {% if scan.files %} Wordlists used : {{ scan.files }}<br> {% endif %}
+                EntryID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.entryID }}<br>
+                Date of scan&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.date }}<br>
+                <button type="button" class="close" onClick="deleteSubdomain({{ scan.id }})">
                     <span aria-hidden="true">&times;</span>
                 </button>
+                <br>
             </li>
         {% endfor %}
     </div>

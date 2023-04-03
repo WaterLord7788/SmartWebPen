@@ -1,40 +1,198 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-  %}
-  {% autoescape false %}
-  
-  <div class="container">
-    <!--<h1/align="center">Notes v1</h1>
-    <p/align="center">
-      Use <b>HTML</b> to make your notes more beautiful!</b>
-      <br>In addition, you can upload an image and paste it into your notes.
-    </p>
-    <div class="box">
-      <ul class="list-group list-group-flush" id="notes">
-          {% for note in user.notes %}
-          <li class="list-group-item">
-            {{ note.data }}
-            <button type="button" class="close" onClick="deleteNote({{ note.id }})">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </li>
-          {% endfor %}
-      </ul>
-    </div>
-  
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+{% if state == "No subdomain" %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin-top: 2%;">
+    <strong>No Subdomain!</strong> You should write down the subdomain you want me to scan.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+<h1/align="center" style="margin-top: 2%;">Vulnerability Detection and Subdomain Enumeration</h1>
+<p/align="center">
+    Supply your target <b>HOST</b> and enumerate all possible subdomains.<br>
+    In addition, vulnerability scanning will be also made, if you choose so.
+</p>
+<div class="box">
+    <ul class="list-group list-group-flush" id="subdomains">
+    
     <div class="embed">
-      <center>
-        <iframe frameBorder="0" width="1080" height="120" scrolling="no" src="http://127.0.0.1:5000/upload"></iframe>
-      </center>
-      <upload-note>
         <form method="POST">
-          <textarea name="note" id="note" class="form-control"></textarea>
-          <div/align="center">
-            <button type="submit" class="separate-button btn btn-primary">Add Note</button>
+          
+          <table style="width: 100%;">
+            <tbody>
+              <tr>
+                <th>
+                  <input/align="center" class="form-control" type="text" placeholder="Subdomain" name="subdomain">
+                </th>
+              </tr>
+            </tbody>
+          </table>
+          <table style="width: 100%;">
+            <tbody>
+              <tr>
+                <th>
+                  <input type="checkbox" value="true" name="useAMASS" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Use <b>AMASS</b>
+                  </label>
+                </th>
+                <th>
+                  <input type="checkbox" value="true" name="useSubfinder" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Use <b>Subfinder</b>
+                  </label>
+                </th>
+                <th>
+                  <input type="checkbox" value="true" name="useGau" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Use <b>GAU</b>
+                  </label>
+                </th>
+                <th>
+                  <input type="checkbox" value="true" name="useWaybackurls" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Use <b>Waybackurls</b>
+                  </label>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  <input id="reactiveTickbox" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
+                      onclick="if(document.getElementById('wordlist').disabled == true){document.getElementById('wordlist').disabled = false}else{document.getElementById('wordlist').disabled = true};">
+                  <label for="flexCheckDefault">
+                    Use custom <b>WORDLIST</b>
+                  </label>
+                </th>
+
+                <th>
+                  <input type="checkbox" value="true" name="useAliveCheck" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Scan for <b>alive</b> domains
+                  </label>
+                </th>
+
+                <th>
+                  <input type="checkbox" value="true" name="useScreenshotting" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Screenshot <b>alive</b> domains
+                  </label>
+                </th>
+
+                <th>
+                  <input type="checkbox" value="true" name="useCrt.sh" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    Use <b>crt.sh</b>
+                  </label>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  <input type="text" placeholder="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" id="wordlist" 
+                  value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="useCustomWordlistForSubdomains" disabled="True">
+                </th>
+                <th>
+                  <input type="checkbox" value="true" name="exposedPorts" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>Exposed Ports</b>
+                  </label>
+                </th>
+                <th></th>
+                <th></th>
+              </tr>
+            </tbody>
+          </table>
+          <table style="width: 100%; margin-top: 2%;">
+            <tbody>
+              <tr>
+                <th>
+                  <input type="checkbox" value="true" name="doVulnerabilityScanning" id="sasa"
+                    onclick="
+                      var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);
+                      console.log(elms);
+                      for(var i = 0; i < elms.length; i++){
+                        console.log(elms[i].disabled);
+
+                        if(elms[i].disabled == true){
+                          elms[i].disabled = false;
+                        }
+                        else{
+                          elms[i].disabled = true;
+                        }
+                        
+                      }
+                    "
+                    >
+                  <label for="flexCheckDefault">
+                    Do <b>vulnerability scanning</b>
+                  </label>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <tbody>
+              <tr>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="XSS" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>XSS</b>
+                  </label>
+                </th>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="Nuclei" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>Nuclei</b>
+                  </label>
+                </th>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="CRLF" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>CRLF</b>
+                  </label>
+                </th>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="SQLi" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>SQLi</b>
+                  </label>
+                </th>
+                <th style="width: 40%">
+                  <input disabled="true" id="vulnCheckDefault" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
+                    onclick="if(document.getElementById('wordlist2').disabled == true){document.getElementById('wordlist2').disabled = false}else{document.getElementById('wordlist2').disabled = true};">
+                  <label for="flexCheckDefault">
+                    Use custom <b>WORDLIST</b>&nbsp; &nbsp; 
+                  </label>
+                  <input disabled="true" type="text" placeholder="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" id="wordlist2" 
+                    value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="useCustomWordlistForVulnerabilities" disabled="True"
+                    >
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="Github" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>Github Secrets</b>
+                  </label>
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </tbody>
+          </table>
+          <div/align="center" class="submit-button" style="margin-top: 10px;">
+            <button type="submit" class="separate-button btn btn-primary">Start Scanning</button>
+            <br>
           </div>
+
         </form>
-      </upload-note>
-    </div class="embed">-->
-  </div>
-  
-  {% endautoescape %}
-  {% endblock %}
+    </div class="embed">
+    <div class="results">
+      
+    </div>
+</div>
+
+{% endautoescape %}
+{% endblock %}
