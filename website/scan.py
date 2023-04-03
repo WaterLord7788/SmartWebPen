@@ -59,12 +59,18 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             output = execute.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt'))
             execute.close()
+            cmd2 = str('waybackurls '+domain+' | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+raw-'+entryID+'.txt')
+            execute2 = os.popen(cmd2)
+            output2 = execute2.read()
+            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+raw-'+entryID+'.txt'))
+            execute2.close()
         """ # Currently not working - One of To-Do's
         elif tool == 'crt.sh':
             cmd = str("curl 'https://crt.sh/?q="+domain+"&output=json' | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+""+domain+"-crt.sh-"+entryID+".txt")
             execute = os.popen(cmd); 
             output = execute.read(); 
             execute.close()"""
+
     for method in methods.split():
         print('[*] Using method                : '+method+'')
         if method == 'checkAliveSubdomains':
@@ -80,9 +86,20 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             output = execute.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive+stats-'+entryID+'.txt'))
             execute.close()
-        if method == 'checkExposedPorts':
+        elif method == 'checkExposedPorts':
+            # <!-- Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e-->
             pass
-            
+        elif method == 'checkVulnerableParameters':
+            vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
+                     'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
+            for vuln in vulns:
+                cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+raw-'+entryID+'.txt | sort -u | gf '+vuln+' | tee -a '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-params-'+vuln+'-'+entryID+'.txt ')
+                print(vuln, cmd)
+                execute = os.popen(cmd)
+                output = execute.read()
+                resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-params-'+vuln+'-'+entryID+'.txt'))
+                execute.close()
+
     for file in files.split():
         print('[*] Using file                  : '+file+'')
 
@@ -94,8 +111,8 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID=str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
     print(); print('[*] Initiating vulnerability scanning!')
-    print('[*] Gathering subdomains for '+domain+'')
-    executeSubdomainEnumeration(domain=domain, tools="amass subfinder gau waybackurls", methods="customWordlist checkAliveSubdomains useScreenshotting", files="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt", entryID=entryID)
+    # print('[*] Gathering subdomains for '+domain+'')
+    # executeSubdomainEnumeration(domain=domain, tools="amass subfinder gau waybackurls", methods="customWordlist checkAliveSubdomains useScreenshotting", files="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt", entryID=entryID)
     print(); print('[*] Starting vulnerability scanning!')
     print('[*] Using the following tools   : '+str(tools)+'')
     print('[*] Using the following methods : '+str(methods)+'')

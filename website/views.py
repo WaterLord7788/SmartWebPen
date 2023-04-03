@@ -37,17 +37,18 @@ def home():
             # Get the required options
             tools, methods, files, vulnerabilities = [], [], [], []
 
-            if request.form.get('useAMASS'):          tools.append('amass')
-            if request.form.get('useSubfinder'):      tools.append('subfinder')
-            if request.form.get('useGau'):            tools.append('gau')
-            if request.form.get('useWaybackurls'):    tools.append('waybackurls')
-            if request.form.get('useCrt.sh'):         tools.append('crt.sh')
+            if request.form.get('useAMASS'):             tools.append('amass')
+            if request.form.get('useSubfinder'):         tools.append('subfinder')
+            if request.form.get('useGau'):               tools.append('gau')
+            if request.form.get('useWaybackurls'):       tools.append('waybackurls')
+            if request.form.get('useCrt.sh'):            tools.append('crt.sh')
             if request.form.get('useCustomWordlistForSubdomains'): 
                 methods.append('customWordlistForSubdomains')
                 files.append(request.form.get('customWordlistForSubdomains'))
-            if request.form.get('useAliveCheck'):     methods.append('checkAliveSubdomains')
-            if request.form.get('useScreenshotting'): methods.append('useScreenshotting')
-            if request.form.get('exposedPorts'):      methods.append('checkExposedPorts')
+            if request.form.get('useAliveCheck'):        methods.append('checkAliveSubdomains')
+            if request.form.get('useScreenshotting'):    methods.append('useScreenshotting')
+            if request.form.get('exposedPorts'):         methods.append('checkExposedPorts')
+            if request.form.get('vulnerableParameters'): methods.append('checkVulnerableParameters')
 
             if request.form.get('doVulnerabilityScanning'):
                 if request.form.get('CRLF'):                                vulnerabilities.append('CRLF')

@@ -130,6 +130,7 @@ dmypy.json
 
 # Just for testing purposes
 database.db
+.gf/*.*
 website/static/img/*.*
 website/__pycache__/*.pyc
 website/__pycache__/views.cpython-310.pyc
