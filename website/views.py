@@ -67,23 +67,26 @@ def home():
             entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
             # Create scanning report entry in database.db.
-            new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, vulnerabilities=vulnerabilities, entryID=entryID)
-            db.session.add(new_scan)
-            db.session.commit()
+            try:
+                new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, vulnerabilities=vulnerabilities, entryID=entryID)
+                db.session.add(new_scan)
+                db.session.commit()
 
-            # Start executing commands in scan.py file.
-            executeSubdomainEnumeration(domain, tools, methods, files, entryID)
+                # Start executing commands in scan.py file.
+                executeSubdomainEnumeration(domain, tools, methods, files, entryID)
 
-            # Start executing vulnerability scanning, if user decided to do so.
-            if request.form.get('doVulnerabilityScanning'):
-                executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
-            
-            flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-            flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
-            #flash(str('Something went <b>wrong</b>! Try again..'), category='error')
+                # Start executing vulnerability scanning, if user decided to do so.
+                if request.form.get('doVulnerabilityScanning'):
+                    executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
+                
+                flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
+                flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
+            except:
+                flash(str('Something went <b>wrong</b>! Try again..'), category='error')
 
         else:
             return render_template('home.html', user=current_user, state="No subdomain")
+            
     return render_template('home.html', user=current_user)
 
 
@@ -120,7 +123,6 @@ def debug():
         execute.close()
         return render_template("debug.html", user=current_user, ADMIN=ADMIN, output=output)
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
-
 
 
 @views.route('/subdomains', methods=['GET', 'POST'])

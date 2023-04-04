@@ -54,16 +54,26 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt'))
             execute.close()
         elif tool == 'waybackurls':
+            # Gather only subdomains from root domain.
             cmd = str('waybackurls '+domain+' | unfurl domains | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt')
             execute = os.popen(cmd)
             output = execute.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt'))
             execute.close()
+
+            # Gather all urls from root domain
             cmd2 = str('waybackurls '+domain+' | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+raw-'+entryID+'.txt')
             execute2 = os.popen(cmd2)
             output2 = execute2.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+raw-'+entryID+'.txt'))
             execute2.close()
+
+            # Gather everything from all domains
+            cmd3 = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | waybackurls | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+all-'+entryID+'.txt')
+            execute3 = os.popen(cmd3)
+            output3 = execute3.read()
+            resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+all-'+entryID+'.txt'))
+            execute3.close()
         """ # Currently not working - One of To-Do's
         elif tool == 'crt.sh':
             cmd = str("curl 'https://crt.sh/?q="+domain+"&output=json' | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+""+domain+"-crt.sh-"+entryID+".txt")
@@ -75,13 +85,13 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print('[*] Using method                : '+method+'')
         if method == 'checkAliveSubdomains':
             # Raw output.
-            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-amass-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-subfinder-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-gau-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls-'+entryID+'.txt && cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-crt.sh-'+entryID+'.txt) | httpx -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive-'+entryID+'.txt ')
+            cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %d | httpx -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive-'+entryID+'.txt ')
             execute = os.popen(cmd)
             output = execute.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive-'+entryID+'.txt'))
             execute.close()
             # Output subdomains with additional data. For user to read through.
-            cmd = str('(cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt ) | httpx -title -cl -sc -tech-detect -fr -server -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive+stats-'+entryID+'.txt ')
+            cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %d | httpx -title -cl -sc -tech-detect -fr -server -no-color | sort -u | tee '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive+stats-'+entryID+'.txt ')
             execute = os.popen(cmd)
             output = execute.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive+stats-'+entryID+'.txt'))
@@ -93,7 +103,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             for vuln in vulns:
-                cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-waybackurls+raw-'+entryID+'.txt | sort -u | gf '+vuln+' | tee -a '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-params-'+vuln+'-'+entryID+'.txt ')
+                cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | gf '+vuln+' | tee -a '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-params-'+vuln+'-'+entryID+'.txt ')
                 print(vuln, cmd)
                 execute = os.popen(cmd)
                 output = execute.read()
