@@ -104,7 +104,6 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             for vuln in vulns:
                 cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | gf '+vuln+' | tee -a '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-params-'+vuln+'-'+entryID+'.txt ')
-                print(vuln, cmd)
                 execute = os.popen(cmd)
                 output = execute.read()
                 resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-params-'+vuln+'-'+entryID+'.txt'))
@@ -114,24 +113,22 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print('[*] Using file                  : '+file+'')
 
     print('[+] Resulting files created     : '+str(resultFiles)+'')
-    Scan.query.filter_by(entryID=entryID).resultFiles = resultFiles
+    resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+    Scan.query.filter_by(entryID=entryID).first().resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(resultFiles)
     db.session.commit()
-    print('[+] Scanning completed! Check logs in '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+'')
+    print('[+] Subdomain scanning completed! Check logs in '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+'')
 
 
-def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID=str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
+def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
     print(); print('[*] Initiating vulnerability scanning!')
-    # print('[*] Gathering subdomains for '+domain+'')
-    # executeSubdomainEnumeration(domain=domain, tools="amass subfinder gau waybackurls", methods="customWordlist checkAliveSubdomains useScreenshotting", files="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt", entryID=entryID)
-    print(); print('[*] Starting vulnerability scanning!')
-    print('[*] Using the following tools   : '+str(tools)+'')
-    print('[*] Using the following methods : '+str(methods)+'')
+    print('[*] Starting vulnerability scanning!')
+    print('[*] Exploiting vulnerabilities  : '+str(vulnerabilities)+'')
     print('[*] Using the following files   : '+str(files)+'')
 
     resultFiles = []
 
     for vulnerability in vulnerabilities.split():
-        print('[*] Executing scanning for      : '+str(tool)+'')
+        print('[*] Executing scanning for      : '+str(vulnerability)+'')
         if vulnerability == 'CRLF':
             cmd = str('cat '+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive-'+entryID+'.txt | while read -r line; do echo && echo $line/%0D%0A%20Set-Cookie:%20testingForCRLF=true && curl -s -I -X GET $line/%0D%0A%20Set-Cookie:%20testingForCRLF=true && echo $line/%E5%98%8D%E5%98%8Set-Cookie:%20testingForCRLF=true && curl -s -I -X GET $line/%E5%98%8D%E5%98%8Set-Cookie:%20testingForCRLF=true && echo ; done | tee '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+''+domain+'-crlf-'+entryID+'.txt')
             execute = os.popen(cmd);
@@ -155,7 +152,11 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID=str(ran
         elif vulnerability == 'Github':
             pass
 
-    print('[+] Scanning completed! Check logs in '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+'')
+    print('[+] Resulting files created     : '+str(resultFiles)+'')
+    resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+    Scan.query.filter_by(entryID=entryID).first().resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(resultFiles)
+    db.session.commit()
+    print('[+] Vulnerability scanning completed! Check logs in '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+'')
 
 
 def executeURLScanning():

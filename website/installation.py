@@ -66,12 +66,12 @@ def installTools():
     com_str = 'which gf'
     command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
     (output, error) = command.communicate()
-    if 'nuclei' not in str(output):
-        # Installing nuclei
+    if 'gf' not in str(output):
+        # Installing gf
         print('[-] Gf not present')
         print('[*] Installing gf')
         os.popen('go get -u github.com/tomnomnom/gf')
         print('[+] Done installing gf!'); print()
         print('[*] Downloading gf patterns')
-        os.popen('git clone https://github.com/1ndianl33t/Gf-Patterns && mkdir .gf && mv Gf-Patterns/*.json .gf/ && rm -r Gf-Patterns/')
+        os.popen('git clone https://github.com/1ndianl33t/Gf-Patterns && mkdir .gf && mv Gf-Patterns/*.json .gf/ ; rm -r Gf-Patterns/')
         print('[+] Done downloading gf patterns!')

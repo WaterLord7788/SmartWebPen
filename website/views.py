@@ -35,7 +35,7 @@ def home():
             domain = request.form.get('subdomain')
             domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
             # Get the required options
-            tools, methods, files, vulnerabilities = [], [], [], []
+            tools, methods, files, resultFiles, vulnerabilities = [], [], [], [], []
 
             if request.form.get('useAMASS'):             tools.append('amass')
             if request.form.get('useSubfinder'):         tools.append('subfinder')
@@ -63,31 +63,32 @@ def home():
             tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+            resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             vulnerabilities = str(vulnerabilities).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
             # Create scanning report entry in database.db.
-            try:
-                new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, vulnerabilities=vulnerabilities, entryID=entryID)
-                db.session.add(new_scan)
-                db.session.commit()
+            new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
+            db.session.add(new_scan)
+            db.session.commit()
 
-                # Start executing commands in scan.py file.
-                executeSubdomainEnumeration(domain, tools, methods, files, entryID)
+            # Start executing commands in scan.py file.
+            executeSubdomainEnumeration(domain, tools, methods, files, entryID)
 
-                # Start executing vulnerability scanning, if user decided to do so.
-                if request.form.get('doVulnerabilityScanning'):
-                    executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
-                
-                flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-                flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
-            except:
-                flash(str('Something went <b>wrong</b>! Try again..'), category='error')
+            # Start executing vulnerability scanning, if user decided to do so.
+            if request.form.get('doVulnerabilityScanning'):
+                executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
+            
+            flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
+            flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
+            
+            #flash(str('Something went <b>wrong</b>! Try again..'), category='error')
 
         else:
             return render_template('home.html', user=current_user, state="No subdomain")
             
     return render_template('home.html', user=current_user)
+
 
 
 def allowed_file(filename):
@@ -125,6 +126,7 @@ def debug():
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
 
+
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
 def subdomains():
@@ -138,37 +140,10 @@ def vulnerabilities():
     vulnerabilities = Vulnerabilities.query.all()
     if request.method == 'POST':
         if request.form.get('subdomain'):
-            # Subdomain sanitization
-            domain = request.form.get('subdomain')
-            domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
-            
-            # Get the required options
-            tools, methods, files = [], [], []
-            if request.form.get('CRLF'):          tools.append('CRLF')
-            if request.form.get('XSS'):      tools.append('XSS')
-            if request.form.get('SQLi'):    tools.append('SQLi')
-            if request.form.get('Nuclei'):         tools.append('Nuclei')
-            if request.form.get('useCustomWordlist'): methods.append('customWordlist'); files.append(request.form.get('customWordlist'))
-            flash(str('<b>Vulnerability scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-            flash(str('The following <b>vulnerabilities</b> are going to be tested for: '+str(tools)+''), category='info')
-
-            # Convert list to string
-            tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
-
-            # Create vulnerability scan report entry in database.db
-            new_vulnerability = Vulnerabilities(url=domain, methods=methods, tools=tools, files=files, entryID=entryID)
-            db.session.add(new_vulnerability)
-            db.session.commit()
-
-            # Start executing commands in scan.py file
-            executeVulnerabilityScanning(domain, tools, methods, files, entryID)
+            pass
         else:
             return render_template('vulnerabilities.html', user=current_user, state="No subdomain", vulnerabilities=vulnerabilities)
     return render_template('vulnerabilities.html', user=current_user, vulnerabilities=vulnerabilities)
-
 
 
 @views.route('/ports', methods=['GET', 'POST'])
@@ -182,15 +157,56 @@ def ports():
     return render_template('ports.html', user=current_user)
 
 
-@views.route('/subdomains/<int:id>/', methods=['GET', 'POST'])
+
+@views.route('/subdomains/<int:entryID>/', methods=['GET', 'POST'])
 @login_required
-def getSubdomainScanDetails(id):
-    return str('ID: '+str(id)+'')
+def getSubdomainScanDetails(entryID):
+    # print(str('ID: '+str(entryID)+''))
+
+    #try:
+    resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles)
+    if len(resultFiles) < 4:
+        flash(str('No resulting files of scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
+    else:
+        # Real work starts here.
+        # Code below fetches all the resulting files from the scan,
+        # and outputs the results into an HTML box in id.subdomains.html file.
+
+        resultFiles = resultFiles.split(' ')
+        resultFiles.pop(0)
+        #print()
+        #print(resultFiles)
+
+        files = {}
+        for resultFile in resultFiles:
+            if 'subdomains/' in resultFile:     # If file is in subdomains/ folder,
+                file = ''                        # do something.
+                with open(resultFile) as f:
+                    for line in f:
+                        line = line.strip()
+                        line = '<a/href="//'+line+'"/target="_blank">'+line+'</a>'
+                        line += '<br>'
+                        file += line
+                    #print()
+                    #print(file)
+                files[resultFile] = file
+        
+        for keys, value in files.items():
+            print(keys)
+
+        return render_template('id.subdomains.html', file=file, user=current_user)
+
+    #except:
+        #flash(str('No scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
+
+    return render_template('id.subdomains.html', user=current_user)
+
 
 @views.route('/ports/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def getPortScanDetails(id):
     return str('ID: '+str(id)+'')
+
 
 @views.route('/vulnerabilities/<int:id>/', methods=['GET', 'POST'])
 @login_required

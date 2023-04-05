@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content %}
+{% autoescape false %}
+    
+<div class="box">
+    <ul class="list-group list-group-flush" id="subdomains">
+    
+    <div class="embed">
+        <!-- Nothing here :D -->
+    </div class="embed">
+
+    <div class="results" style="border:solid 1px black; padding: 5px;">
+        {{ file }}
+    </div>
+</div>
+
+{% endautoescape %}
+{% endblock %}
