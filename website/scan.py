@@ -96,6 +96,8 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             output = execute.read()
             resultFiles.append(str(''+SUBDOMAIN_SCAN_OUTPUT_DIRECTORY+''+domain+'-alive+stats-'+entryID+'.txt'))
             execute.close()
+        elif method == 'useScreenshotting':
+            pass
         elif method == 'checkExposedPorts':
             # <!-- Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e-->
             pass

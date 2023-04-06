@@ -1,5 +1,5 @@
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
-from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for
+from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for, redirect
 from .check import checkForFolders      # Checking for necessary folders
 from .installation import installTools  # Checking for necessary tools
 import asyncio                          # For asynchronous completion of os.system() commands
@@ -101,17 +101,17 @@ def upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
-            return render_template("upload.html", state="No file part")
+            return render_template("upload.html", state="No file part", user=current_user)
         file = request.files['file']
         if file.filename == '':
             flash('No selected file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-            return render_template("upload.html", state="Successful upload", file=file)
+            return render_template("upload.html", state="Successful upload", file=file, user=current_user)
         else:
-            return render_template("upload.html", state="Forbidden extension")
-    return render_template("upload.html", state="")
+            return render_template("upload.html", state="Forbidden extension", user=current_user)
+    return render_template("upload.html", state="", user=current_user)
 
 
 @views.route('/debug', methods=['GET', 'POST'])
@@ -179,22 +179,34 @@ def getSubdomainScanDetails(entryID):
 
         files = {}
         for resultFile in resultFiles:
-            if 'subdomains/' in resultFile:     # If file is in subdomains/ folder,
-                file = ''                        # do something.
+            file = ''
+            print(resultFile)
+            if 'subdomains/' in resultFile:     # If file is in subdomains/ folder.
                 with open(resultFile) as f:
                     for line in f:
                         line = line.strip()
-                        line = '<a/href="//'+line+'"/target="_blank">'+line+'</a>'
+                        line = '<a/href="../../redirect?url='+line+'"/target="_blank">'+line+'</a>'
+                        line += '<br>'
+                        file += line
+                    #print()
+                    #print(file)
+                files[resultFile] = file
+            elif 'waybackurls+' in resultFile:  # If file has more than just subdomains.
+                with open(resultFile) as f:
+                    for line in f:
+                        line = line.strip()
                         line += '<br>'
                         file += line
                     #print()
                     #print(file)
                 files[resultFile] = file
         
-        for keys, value in files.items():
-            print(keys)
+        #for keys, value in files.items():
+        #    print(keys)
 
-        return render_template('id.subdomains.html', file=file, user=current_user)
+        # {'/something/something.txt':'text...'}
+
+        return render_template('id.subdomains.html', files=files, user=current_user)
 
     #except:
         #flash(str('No scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
@@ -212,3 +224,8 @@ def getPortScanDetails(id):
 @login_required
 def getVulnerabilityScanDetails(id):
     return str('ID: '+str(id)+'')
+
+
+@views.route('/redirect', methods=['GET'])
+def redirectToUrl():
+    return render_template('redirect.html', user=current_user)

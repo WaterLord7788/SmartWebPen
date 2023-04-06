@@ -8,9 +8,19 @@
         <!-- Nothing here :D -->
     </div class="embed">
 
-    <div class="results" style="border:solid 1px black; padding: 5px;">
-        {{ file }}
-    </div>
+    <style>
+        a:link { color: gray;}
+        a:visited {color: black;}
+        a:active {color: black;}
+        a:hover { color: red;}
+    </style>
+
+    {% for key, value in files.items() %}
+        <div class="results" style="border:solid 1px black; padding: 5px; margin-bottom: 10px;">
+            <h5>{{ key }}</h5>
+            {{ value }}
+        </div>
+    {% endfor %}
 </div>
 
 {% endautoescape %}

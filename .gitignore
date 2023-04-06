@@ -144,3 +144,9 @@ website/generated/subdomains/*.txt
 website/generated/vulnerabilities/*.txt
 website/templates/*.bak
 website/*.bak
+*.log
+*.pot
+*.pyc
+*/*/*/__pycache__/
+*/*/__pycache__/
+*/__pycache__/
