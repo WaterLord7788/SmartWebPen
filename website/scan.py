@@ -26,7 +26,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     with open(realOutputDirectory, "w") as file:
         file.write(output)
     """
-    print(); print('[+] Starting subdomain enumeration!')
+    print(); print('[+] Starting subdomain enumeration against '+str(domain)+'!')
     print('[*] Using the following tools   : '+str(tools)+'')
     print('[*] Using the following methods : '+str(methods)+'')
     print('[*] Using the following files   : '+str(files)+'')
@@ -122,8 +122,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
-    print(); print('[*] Initiating vulnerability scanning!')
-    print('[*] Starting vulnerability scanning!')
+    print(); print('[*] Starting vulnerability scanning against '+str(domain)+'!')
     print('[*] Exploiting vulnerabilities  : '+str(vulnerabilities)+'')
     print('[*] Using the following files   : '+str(files)+'')
 

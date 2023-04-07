@@ -15,12 +15,11 @@
         a:hover { color: red;}
     </style>
 
-    {% if files %}
-        {% for key, value in files.items() %}
-            <div class="results" style="border:solid 1px black; padding: 5px; margin-bottom: 10px;">
-                <a href="../../file?file={{ key }}" target="_blank"><h5>{{ key }}</h5></a>
-            </div>
-        {% endfor %}
+    {% if file %}
+        <div class="results" style="border:solid 1px black; padding: 5px; margin-bottom: 10px;">
+            <h5>{{ file }}</h5>
+            {{ contents }}
+        </div>
     {% endif %}
 </div>
 

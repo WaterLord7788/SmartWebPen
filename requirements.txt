@@ -6,3 +6,4 @@ requests==2.27.1
 SQLAlchemy==1.4.31
 Werkzeug==2.0.2
 asyncio==3.4.3
+pathlib2==2.3.7

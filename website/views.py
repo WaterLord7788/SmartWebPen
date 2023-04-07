@@ -10,6 +10,7 @@ from os.path import join, dirname, realpath
 from werkzeug.utils import secure_filename
 from bs4 import BeautifulSoup
 from threading import Thread
+from pathlib2 import Path
 from .scan import *
 import requests
 import random
@@ -18,6 +19,7 @@ import os
 
 
 views = Blueprint('views', __name__)
+
 
 
 @views.before_app_first_request
@@ -90,7 +92,6 @@ def home():
     return render_template('home.html', user=current_user)
 
 
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -126,7 +127,6 @@ def debug():
     return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
 
-
 @views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
 def subdomains():
@@ -157,59 +157,45 @@ def ports():
     return render_template('ports.html', user=current_user)
 
 
-
 @views.route('/subdomains/<int:entryID>/', methods=['GET', 'POST'])
 @login_required
 def getSubdomainScanDetails(entryID):
-    # print(str('ID: '+str(entryID)+''))
+    subdomainScan = Scan.query.filter_by(entryID=entryID).first()
+    if subdomainScan:
+        resultFiles = subdomainScan.resultFiles
+        if len(resultFiles) < 4:
+            flash(str('No resulting files of scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
+            flash('You might need to wait for the scan to finish.', category='info')
+        else:
+            # Real work starts here.
+            # Code below fetches all the resulting files from the scan,
+            # and outputs the results into an HTML box in id.subdomains.html file.
+            resultFiles = resultFiles.split(' ')
+            resultFiles.pop(0)
+            files = {}
 
-    #try:
-    resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles)
-    if len(resultFiles) < 4:
-        flash(str('No resulting files of scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
+            for resultFile in resultFiles:
+                file = ''
+                print(resultFile)
+                if 'subdomains/' in resultFile:     # If file is in subdomains/ folder.
+                    with open(resultFile) as f:
+                        for line in f:
+                            line = line.strip()
+                            line = '<a/href="../../redirect?url='+line+'"/target="_blank">'+line+'</a>'
+                            line += '<br>'
+                            file += line
+                    files[resultFile] = file
+                elif 'waybackurls+' in resultFile:  # If file has more than just subdomains.
+                    with open(resultFile) as f:
+                        for line in f:
+                            line = line.strip()
+                            line += '<br>'
+                            file += line
+                    files[resultFile] = file
+
+            return render_template('id.subdomains.html', files=files, user=current_user)
     else:
-        # Real work starts here.
-        # Code below fetches all the resulting files from the scan,
-        # and outputs the results into an HTML box in id.subdomains.html file.
-
-        resultFiles = resultFiles.split(' ')
-        resultFiles.pop(0)
-        #print()
-        #print(resultFiles)
-
-        files = {}
-        for resultFile in resultFiles:
-            file = ''
-            print(resultFile)
-            if 'subdomains/' in resultFile:     # If file is in subdomains/ folder.
-                with open(resultFile) as f:
-                    for line in f:
-                        line = line.strip()
-                        line = '<a/href="../../redirect?url='+line+'"/target="_blank">'+line+'</a>'
-                        line += '<br>'
-                        file += line
-                    #print()
-                    #print(file)
-                files[resultFile] = file
-            elif 'waybackurls+' in resultFile:  # If file has more than just subdomains.
-                with open(resultFile) as f:
-                    for line in f:
-                        line = line.strip()
-                        line += '<br>'
-                        file += line
-                    #print()
-                    #print(file)
-                files[resultFile] = file
-        
-        #for keys, value in files.items():
-        #    print(keys)
-
-        # {'/something/something.txt':'text...'}
-
-        return render_template('id.subdomains.html', files=files, user=current_user)
-
-    #except:
-        #flash(str('No scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
+        flash(str('No scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
 
     return render_template('id.subdomains.html', user=current_user)
 
@@ -229,3 +215,18 @@ def getVulnerabilityScanDetails(id):
 @views.route('/redirect', methods=['GET'])
 def redirectToUrl():
     return render_template('redirect.html', user=current_user)
+
+
+@views.route('/file', methods=['GET'])
+@login_required
+def getFile():
+    # HTTP GET parameter 'file' would look like in URL: http://127.0.0.1/file?file=subdomains/army.mil-amass-402766.txt
+    if request.args.get('file'):
+        file = request.args.get('file')
+        #filePath = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY) + file
+        filePath = file
+        contents = Path(filePath).read_text().replace('\n', '<br>')
+        return render_template('file.html', file=file, contents=contents, user=current_user)
+    else:
+        flash('No <b>file</b> parameter supplied!', category='error')
+    return render_template('file.html', user=current_user)
