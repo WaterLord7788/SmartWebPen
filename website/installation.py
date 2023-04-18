@@ -75,3 +75,13 @@ def installTools():
         print('[*] Downloading gf patterns')
         os.popen('git clone https://github.com/1ndianl33t/Gf-Patterns && mkdir .gf && mv Gf-Patterns/*.json .gf/ ; rm -r Gf-Patterns/')
         print('[+] Done downloading gf patterns!')
+
+    com_str = 'which dnsx'
+    command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
+    (output, error) = command.communicate()
+    if 'dnsx' not in str(output):
+        # Installing dnsx
+        print('[-] Dnsx not present')
+        print('[*] Installing dnsx')
+        os.popen('go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest')
+        print('[+] Done installing dnsx!'); print()

@@ -24,8 +24,10 @@ views = Blueprint('views', __name__)
 
 @views.before_app_first_request
 def setup():
+    print('[!] Setup checking.')
     checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
     installTools()
+    print('[+] Setup checking completed!')
 
 
 @views.route('/', methods=['GET', 'POST'])
