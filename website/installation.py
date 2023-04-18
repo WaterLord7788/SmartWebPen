@@ -70,7 +70,7 @@ def installTools():
         # Installing gf
         print('[-] Gf not present')
         print('[*] Installing gf')
-        os.popen('go get -u github.com/tomnomnom/gf')
+        os.popen('go install -v github.com/tomnomnom/gf@latest')
         print('[+] Done installing gf!'); print()
         print('[*] Downloading gf patterns')
         os.popen('git clone https://github.com/1ndianl33t/Gf-Patterns && mkdir .gf && mv Gf-Patterns/*.json .gf/ ; rm -r Gf-Patterns/')

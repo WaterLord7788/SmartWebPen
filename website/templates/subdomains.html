@@ -31,7 +31,7 @@
                 {% if scan.files %} Wordlists used : {{ scan.files }}<br> {% endif %}
                 EntryID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.entryID }}<br>
                 Date of scan&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.date }}<br>
-                <button type="button" class="close" onClick="deleteSubdomain({{ scan.id }})">
+                <button type="button" class="close" onClick="deleteScan({{ scan.id }})">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <br>

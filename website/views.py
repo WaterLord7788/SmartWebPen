@@ -232,3 +232,16 @@ def getFile():
     else:
         flash('No <b>file</b> parameter supplied!', category='error')
     return render_template('file.html', user=current_user)
+
+
+@views.route('/delete-scan', methods=['POST'])
+@login_required
+def deleteScan():
+    scan = json.loads(request.data) # this function expects a JSON from the INDEX.js file
+    scanId = scan['scanId']
+    scan = Scan.query.get(scanId)
+    if scan:
+        db.session.delete(scan)
+        db.session.commit()
+        flash('Scan deleted!', category='success')
+    return jsonify({})

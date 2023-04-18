@@ -102,39 +102,12 @@
 
 {% block javascript %}
   <script type="text/javascript">
-  function deleteNote(noteId) {
-    fetch("/delete-note", {
+  function deleteScan(scanId) {
+    fetch("/delete-scan", {
       method: "POST",
-      body: JSON.stringify({ noteId: noteId }),
+      body: JSON.stringify({ scanId: scanId }),
     }).then((_res) => {
-      window.location.href = "/";
-    });
-  }
-
-  function deletePlant(plantId) {
-    fetch("/delete-plant", {
-      method: "POST",
-      body: JSON.stringify({ plantId: plantId }),
-    }).then((_res) => {
-      window.location.href = "/plants";
-    });
-  }
-
-  function acceptSuggestion(suggestionId) {
-    fetch("/accept-suggestion", {
-      method: "POST",
-      body: JSON.stringify({ suggestionId: suggestionId }),
-    }).then((_res) => {
-      window.location.href = "/suggestions";
-    });
-  }
-
-  function deleteSuggestion(suggestionId) {
-    fetch("/delete-suggestion", {
-      method: "POST",
-      body: JSON.stringify({ suggestionId: suggestionId }),
-    }).then((_res) => {
-      window.location.href = "/suggestions";
+      window.location.href = "/subdomains";
     });
   }
   </script>
