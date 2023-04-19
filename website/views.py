@@ -225,7 +225,6 @@ def getFile():
     # HTTP GET parameter 'file' would look like in URL: http://127.0.0.1/file?file=subdomains/army.mil-amass-402766.txt
     if request.args.get('file'):
         file = request.args.get('file')
-        #filePath = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY) + file
         filePath = file
         contents = Path(filePath).read_text().replace('\n', '<br>')
         return render_template('file.html', file=file, contents=contents, user=current_user)
@@ -240,6 +239,15 @@ def deleteScan():
     scan = json.loads(request.data) # this function expects a JSON from the INDEX.js file
     scanId = scan['scanId']
     scan = Scan.query.get(scanId)
+    resultFiles = scan.resultFiles.split(' ')
+    for resultFile in resultFiles:
+        if len(resultFile) != 0:
+            os.remove(resultFile)
+            # `os.rmdir` deletes only empty folder, so we need to do this every time we delete a file.
+            try:
+                os.rmdir(os.path.dirname(resultFile))
+            except:
+                pass
     if scan:
         db.session.delete(scan)
         db.session.commit()
