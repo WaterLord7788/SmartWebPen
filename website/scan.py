@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
-from .models import User, Scan
+from .models import User, Scan, Vulnerabilities
 from bs4 import BeautifulSoup
 import requests
 import asyncio
@@ -34,12 +34,12 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     resultFiles = []
     S_DIR = SUBDOMAIN_SCAN_OUTPUT_DIRECTORY # To make code less confusing. Less text = more understandable.
     S_DIR = S_DIR + entryID + '/'           # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
-    #os.system('mkdir '+S_DIR+'')            # Create a folder, in case if it is missing.
+    os.system('mkdir '+S_DIR+'')            # Create a folder, in case if it is missing.
 
     for tool in tools.split():
         print('[*] Executing                   : '+tool+'')
         if tool == 'amass':
-            cmd = str('amass enum -active -brute -d '+domain+' | tee '+S_DIR+''+domain+'-amass-'+entryID+'.txt')
+            cmd = str('touch '+S_DIR+''+domain+'-amass-'+entryID+'.txt && amass enum -active -brute -d '+domain+' > '+S_DIR+''+domain+'-amass-'+entryID+'.txt')
             execute = os.popen(cmd)
             output = execute.read()
             execute.close()
@@ -126,7 +126,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
     print(); print('[*] Starting vulnerability scanning against '+str(domain)+'!')
-    print('[*] Exploiting vulnerabilities  : '+str(vulnerabilities)+'')
+    print('[*] Searching vulnerabilities   : '+str(vulnerabilities)+'')
     print('[*] Using the following files   : '+str(files)+'')
 
     resultFiles = []
@@ -134,7 +134,7 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
     S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
     V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
     V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
-    #os.system('mkdir '+V_DIR+'')                # Create a folder, in case if it is missing.
+    os.system('mkdir '+V_DIR+'')                # Create a folder, in case if it is missing.
 
     for vulnerability in vulnerabilities.split():
         print('[*] Executing scanning for      : '+str(vulnerability)+'')

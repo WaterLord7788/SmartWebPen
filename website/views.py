@@ -3,7 +3,7 @@ from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for, 
 from .check import checkForFolders      # Checking for necessary folders
 from .installation import installTools  # Checking for necessary tools
 import asyncio                          # For asynchronous completion of os.system() commands
-from .models import User, Scan
+from .models import User, Scan, Vulnerabilities
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
 from os.path import join, dirname, realpath

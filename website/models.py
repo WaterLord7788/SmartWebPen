@@ -26,3 +26,14 @@ class Scan(db.Model, UserMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     vulnerabilities = db.Column(db.String(200))
     entryID = db.Column(db.String(50))
+    
+    
+class Vulnerabilities(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(500))
+    methods = db.Column(db.String(1000))
+    tools = db.Column(db.String(1000))
+    files = db.Column(db.String(1000))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    entryID = db.Column(db.String(50))
