@@ -1,4 +1,4 @@
-from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
+from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, DEBUG_ENABLED, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for, redirect
 from .check import checkForFolders      # Checking for necessary folders
 from .installation import installTools  # Checking for necessary tools
@@ -69,7 +69,7 @@ def home():
             files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
             vulnerabilities = str(vulnerabilities).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-            entryID = str(random.randint(MIN_NUMER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
+            entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
             # Create scanning report entry in database.db.
             new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
@@ -120,13 +120,14 @@ def upload_file():
 @views.route('/debug', methods=['GET', 'POST'])
 @login_required
 def debug():
-    if request.method == 'POST' and current_user.email == ADMIN:
-        cmd = request.form.get('cmd')
-        execute = os.popen(cmd)
-        output = execute.read()
-        execute.close()
-        return render_template("debug.html", user=current_user, ADMIN=ADMIN, output=output)
-    return render_template("debug.html", user=current_user, ADMIN=ADMIN)
+    if DEBUG_ENABLED == True:
+        if request.method == 'POST' and current_user.email == ADMIN:
+            cmd = request.form.get('cmd')
+            execute = os.popen(cmd)
+            output = execute.read()
+            execute.close()
+            return render_template("debug.html", user=current_user, ADMIN=ADMIN, output=output)
+        return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
 
 @views.route('/subdomains', methods=['GET', 'POST'])
@@ -236,13 +237,18 @@ def getFile():
 @views.route('/delete-scan', methods=['POST'])
 @login_required
 def deleteScan():
-    scan = json.loads(request.data) # this function expects a JSON from the INDEX.js file
+    scan = json.loads(request.data) # This function expects a JSON from the INDEX.js file.
     scanId = scan['scanId']
     scan = Scan.query.get(scanId)
     resultFiles = scan.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            os.remove(resultFile)
+            # If there is no files, we just ignore the error, hence we use try...except clause.
+            try:
+                os.remove(resultFile)
+            except:
+                pass
+
             # `os.rmdir` deletes only empty folder, so we need to do this every time we delete a file.
             try:
                 os.rmdir(os.path.dirname(resultFile))

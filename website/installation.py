@@ -85,3 +85,13 @@ def installTools():
         print('[*] Installing dnsx')
         os.popen('go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest')
         print('[+] Done installing dnsx!'); print()
+
+    com_str = 'which eyewitness'
+    command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
+    (output, error) = command.communicate()
+    if 'eyewitness' not in str(output):
+        # Installing dnsx
+        print('[-] Eyewitness not present')
+        print('[*] Installing eyewitness')
+        os.popen('apt install eyewitness')
+        print('[+] Done installing eyewitness!'); print()

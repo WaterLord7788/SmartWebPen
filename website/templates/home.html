@@ -90,7 +90,7 @@
               <tr>
                 <th>
                   <input type="text" placeholder="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" id="wordlist" 
-                  value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="useCustomWordlistForSubdomains" disabled="True">
+                  value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="useCustomWordlistForSubdomains" disabled="true">
                 </th>
                 <th>
                   <input type="checkbox" value="true" name="exposedPorts" id="flexCheckDefault">
@@ -114,21 +114,8 @@
                 <th>
                   <input type="checkbox" value="true" name="doVulnerabilityScanning" id="doVulnerabilityScanningButton"
                     onclick="
-                      var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);
-                      console.log(elms);
-                      for(var i = 0; i < elms.length; i++){
-                        console.log(elms[i].disabled);
-
-                        if(elms[i].disabled == true){
-                          elms[i].disabled = false;
-                        }
-                        else{
-                          elms[i].disabled = true;
-                        }
-                        
-                      }
-                    "
-                    >
+                      var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);for(var i = 0; i < elms.length; i++){if(elms[i].disabled == true){elms[i].disabled = false;}else{elms[i].disabled = true;}}"
+                  >
                   <label for="flexCheckDefault">
                     Do <b>vulnerability scanning</b>
                   </label>
@@ -198,6 +185,16 @@
       
     </div>
 </div>
+
+<!-- Set elements' with ID of `vulnCheckDefault` and `wordlist` disabled value to true -->
+<script>
+  var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);
+  console.log(elms);
+  for(var i = 0; i < elms.length; i++){
+    elms[i].disabled = true;
+  }
+  document.getElementById('wordlist').disabled = true;
+</script>
 
 {% endautoescape %}
 {% endblock %}

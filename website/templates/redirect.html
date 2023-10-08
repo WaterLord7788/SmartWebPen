@@ -3,19 +3,11 @@
     
 <script>
     const queryString = window.location.search;
-    //console.log(queryString);
     const urlParams = new URLSearchParams(queryString);
     const url = urlParams.get('url');
-    //console.log(url);
-    if(url.slice(0,5) == 'http:'){
-        document.location = url;
-    }
-    else if(url.slice(0,6) == 'https:'){
-        document.location = url;
-    }
-    else{
-        document.location = 'http://' + url + '';
-    }
+    if(url.slice(0,5) == 'http:'){document.location = url;}
+    else if(url.slice(0,6) == 'https:'){document.location = url;}
+    else{document.location = 'http://' + url + '';}
 </script>
 
 {% endautoescape %}
