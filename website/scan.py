@@ -2,7 +2,7 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENER
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
-from .models import User, Scan, Vulnerabilities
+from .models import User, Scan, Vulnerability
 from os.path import join, dirname, realpath
 from werkzeug.utils import secure_filename
 from bs4 import BeautifulSoup
@@ -53,7 +53,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             resultFiles.append(checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
 
         elif method == 'useScreenshotting':
-            resultFiles.append(useScreenshotting(domain, entryID, S_DIR))
+            resultFiles.append(useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
 
         elif method == 'checkExposedPorts':
             # Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
@@ -64,6 +64,8 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             for vuln in vulns:
                 resultFiles.append(checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln))
+
+            resultFiles.append(interestingSubsAlive(domain, entryID, S_DIR))
 
     for file in files.split():
         print('[*] Using file                  : '+file+'')
@@ -107,6 +109,6 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
 
     print('[+] Resulting files created     : '+str(resultFiles)+'')
     resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-    Scan.query.filter_by(entryID=entryID).first().resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(resultFiles)
+    Vulnerability.query.filter_by(entryID=entryID).first().resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(resultFiles)
     db.session.commit()
     print('[+] Vulnerability scanning completed! Check logs in '+V_DIR+'')

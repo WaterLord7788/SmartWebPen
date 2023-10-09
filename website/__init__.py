@@ -2,7 +2,11 @@ from flask import Flask, flash, request, redirect, url_for
 from os.path import join, dirname, realpath
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from .systemFunctions import *
 from os import path
+import warnings
+import logging
+import click
 import os
 
 
@@ -25,15 +29,33 @@ PORT_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_
 VULNERABILITY_SCAN_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY, 'vulnerabilities/')
 GENERATED_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_DIRECTORY)
 
+# This is for developers.
+# If you want to see general logging messages, such as: 127.0.0.1 - - [15/Feb/2013 10:52:22] "GET /index.html HTTP/1.1" 200
+# then go ahead and replace `True` to `False`.
+GENERAL_LOGGING_DISABLED = True
 
 
 def create_app():
+    print("[+] Flask application started - 127.0.0.1:5000!")
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs' # Change secret key in order to mitigate serious vulnerability.
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
- 
+    app.config['SECRET_KEY'] = generateSafeSecret()                # Generates safe UUID4 secret key, looks like: `3d6f45a5fc12445dbac2f59c3b6c7cb1`.
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}' # Connection string to our database.
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False           # A configuration to enable or disable tracking modifications of objects. You set it to False to disable tracking and use less memory.
+    db.init_app(app) # Initialize the app. Obviously.
+
+    log = logging.getLogger('werkzeug')
+    log.disabled = GENERAL_LOGGING_DISABLED
+    app.logger.disabled = GENERAL_LOGGING_DISABLED
+    warnings.filterwarnings("ignore")
+    
+    def secho(text, file=None, nl=None, err=None, color=None, **styles):
+        return
+    def echo(text, file=None, nl=None, err=None, color=None, **styles):
+        return
+
+    click.echo = echo
+    click.secho = secho
+
 
     from .views import views
     from .auth import auth

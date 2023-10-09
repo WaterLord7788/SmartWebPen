@@ -38,7 +38,7 @@ def waybackurls(domain, entryID, S_DIR, stage):
 
 def crtsh(domain, entryID, S_DIR):
     outputFile = str(''+S_DIR+''+domain+'-crt.sh-'+entryID+'.txt')
-    cmd = str("curl 'https://crt.sh/?q="+domain+"&output=json' | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+outputFile)
+    cmd = str("curl -s 'https://crt.sh/?q="+domain+"&output=json' | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee "+outputFile)
     executeCMD(cmd);  
     return outputFile
 
@@ -53,11 +53,11 @@ def checkAliveSubdomains(domain, entryID, S_DIR, stage):
         executeCMD(cmd)
     return outputFile
 
-def useScreenshotting(domain, entryID, S_DIR):
+def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
     # To Do's:
     # After completing system calls, it should move all captured images
     # into a specific folder under subdomains.
-    #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d website/generated/vulnerabilities/'+entryID+'/')
+    #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --threads '+threads+' --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d '+V_DIR)
     return
 
 def checkExposedPorts(domain, entryID, S_DIR):
@@ -66,6 +66,12 @@ def checkExposedPorts(domain, entryID, S_DIR):
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = str(''+S_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')
     cmd = str('cat '+S_DIR+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | gf '+sensitiveVulnerabilityType+' | tee -a '+outputFile)
+    executeCMD(cmd)
+    return outputFile
+
+def interestingSubsAlive(domain, entryID, S_DIR):
+    outputFile = str(''+V_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt')
+    cmd = str('cat '+S_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt | unfurl format %d | httpx -no-color -silent | sort -u | tee '+outputFile)
     executeCMD(cmd)
     return outputFile
 

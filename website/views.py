@@ -2,8 +2,7 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, DEBUG_ENABLED, MIN_N
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for, redirect
 from .check import checkForFolders      # Checking for necessary folders
 from .installation import installTools  # Checking for necessary tools
-import asyncio                          # For asynchronous completion of os.system() commands
-from .models import User, Scan, Vulnerabilities
+from .models import User, Scan, Vulnerability
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
 from os.path import join, dirname, realpath
@@ -14,6 +13,7 @@ from threading import Thread
 from pathlib2 import Path
 from .scan import *
 import requests
+import asyncio # For asynchronous completion of system commands
 import random
 import json
 import os
@@ -73,8 +73,8 @@ def home():
             entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
             # Create scanning report entry in database.db.
-            new_scan = Scan(url=domain, methods=methods, tools=tools, files=files, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
-            db.session.add(new_scan)
+            NEW_SCAN = Scan(domain=domain, methods=methods, tools=tools, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
+            db.session.add(NEW_SCAN)
             db.session.commit()
 
             # Start executing commands in scan.py file.
@@ -82,6 +82,11 @@ def home():
 
             # Start executing vulnerability scanning, if user decided to do so.
             if request.form.get('doVulnerabilityScanning'):
+                NEW_SECURITY_SCAN = Vulnerability(domain=domain, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
+                db.session.add(NEW_SECURITY_SCAN)
+                db.session.commit()
+
+                # Start executing commands in scan.py file.
                 executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
             
             flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
