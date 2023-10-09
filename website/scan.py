@@ -5,8 +5,8 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENER
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
 from .models import User, Scan, Vulnerabilities
-from .scanFunctions import *
 from bs4 import BeautifulSoup
+from .scanFunctions import *
 import requests
 import asyncio
 import random
@@ -129,27 +129,32 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
         print('[*] Executing scanning for      : '+str(vulnerability)+'')
 
         if vulnerability == 'CRLF':
+            #resultFiles.append(CRLF(domain, entryID, S_DIR, V_DIR))
             cmd = str('cat '+S_DIR+''+domain+'-alive-'+entryID+'.txt | while read -r line; do echo && echo $line/%0D%0A%20Set-Cookie:%20testingForCRLF=true && curl -s -I -X GET $line/%0D%0A%20Set-Cookie:%20testingForCRLF=true && echo $line/%E5%98%8D%E5%98%8Set-Cookie:%20testingForCRLF=true && curl -s -I -X GET $line/%E5%98%8D%E5%98%8Set-Cookie:%20testingForCRLF=true && echo ; done | tee '+V_DIR+''+domain+'-crlf-'+entryID+'.txt')
             execute = os.popen(cmd)
             resultFiles.append(str(''+V_DIR+''+domain+'-crlf-'+entryID+'.txt'))
             execute.close()
 
         elif vulnerability == 'XSS':
+            #resultFiles.append(XSS(domain, entryID, S_DIR, V_DIR))
             cmd = str('dalfox file '+S_DIR+''+domain+'-alive-'+entryID+'.txt --only-poc="g,r,v" --skip-mining-dict -S --no-color | tee '+V_DIR+''+domain+'-xss-'+entryID+'.txt')
             execute = os.popen(cmd)
             resultFiles.append(str(''+V_DIR+''+domain+'-xss-'+entryID+'.txt'))
             execute.close()
 
         elif vulnerability == 'Nuclei':
+            #resultFiles.append(nuclei(domain, entryID, S_DIR, V_DIR))
             cmd = str('nuclei -l '+S_DIR+''+domain+'-alive-'+entryID+'.txt -es info -silent -rl 80 -o '+V_DIR+''+domain+'-nuclei-'+entryID+'.txt')
             execute = os.popen(cmd)
-            resultFiles += str(''+V_DIR+''+domain+'-nuclei-'+entryID+'.txt')
+            resultFiles.append(str(''+V_DIR+''+domain+'-nuclei-'+entryID+'.txt'))
             execute.close()
 
         elif vulnerability == 'SQLi':
+            #resultFiles.append(SQLi(domain,entryID, S_DIR, V_DIR))
             pass
 
         elif vulnerability == 'Github':
+            #resultFiles.append(github(domain,entryID, S_DIR, V_DIR))
             pass
 
     print('[+] Resulting files created     : '+str(resultFiles)+'')
