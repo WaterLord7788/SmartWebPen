@@ -11,7 +11,6 @@ import requests
 import asyncio
 import random
 import json
-import os
 
 
 def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
@@ -22,8 +21,10 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     
     resultFiles = []
     S_DIR = SUBDOMAIN_SCAN_OUTPUT_DIRECTORY
-    S_DIR = S_DIR + entryID + '/' # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
-    os.system('mkdir '+S_DIR+'')  # Create a folder, in case if it is missing.
+    S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
+    V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
+    V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
+    executeCMD('mkdir '+S_DIR+'')                # Create a folder, in case if it is missing.
 
     for tool in tools.split():
         print('[*] Executing                   : '+tool+'')
@@ -56,19 +57,14 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             pass
 
         elif method == 'checkExposedPorts':
-            # <!-- Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e-->
+            # Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
             resultFiles.append(checkExposedPorts(domain, entryID, S_DIR))
 
         elif method == 'checkVulnerableParameters':
-            # To Do: Hard to implement
-            #resultFiles.append(checkVulnerableParameters(domain, entryID, S_DIR, V_DIR))
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             for vuln in vulns:
-                cmd = str('cat '+S_DIR+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | gf '+vuln+' | tee -a '+S_DIR+''+domain+'-params-'+vuln+'-'+entryID+'.txt ')
-                execute = os.popen(cmd)
-                resultFiles.append(str(''+S_DIR+''+domain+'-params-'+vuln+'-'+entryID+'.txt'))
-                execute.close()
+                resultFiles.append(checkVulnerableParameters(domain, entryID, S_DIR, V_DIR, sensitiveVulnerabilityType=vuln))
 
     for file in files.split():
         print('[*] Using file                  : '+file+'')
@@ -90,7 +86,7 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
     S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
     V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
     V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
-    os.system('mkdir '+V_DIR+'')                # Create a folder, in case it being missing.
+    executeCMD('mkdir '+V_DIR+'')                # Create a folder, in case it being missing.
 
     for vulnerability in vulnerabilities.split():
         print('[*] Executing scanning for      : '+str(vulnerability)+'')
