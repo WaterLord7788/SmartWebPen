@@ -1,7 +1,10 @@
 from os.path import join, dirname, realpath
+import requests
 import socket
 import uuid
+import bs4
 import os
+import re
 
 # Execute system command and return the output of the call.
 def executeCMD(cmd):
@@ -25,4 +28,19 @@ def getIPAddress(domain):
         except: # If failed to get IP by whatever reason, strip the `ip` variable of the subdomain.
             ip = ip[int(ip.find('.')+1):] # This will turn `dev.test.example.com` to `test.example.com`.
     return None
-    
+
+def getContentsOfURL(url):
+    response = requests.get(url)
+    content = response.text
+    return content
+
+def getElementsByCSSPath(content, CSSPath, elementNumber):
+    soup = bs4.BeautifulSoup(content, features="lxml")
+    elements = soup.select(CSSPath)
+    rawDescription = str(elements[elementNumber-1]) # `number-1` because the third element but we need to start from 0 in programming. So, third = 3-1 = 2.
+    return rawDescription
+
+def cleanTextFromHTML(text):
+    CLEAN = re.compile('<.*?>')
+    cleanText = CLEAN.sub('', text)
+    return cleanText

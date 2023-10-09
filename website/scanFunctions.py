@@ -64,9 +64,16 @@ def checkExposedPorts(domain, entryID, S_DIR):
     # To Do's:
     # 1. Parse https://bgp.he.net/ip/156.112.108.76 to get ASN number of the domain.
     # 2. After that get `Description` of the ASN owner.
+    # JS: document.querySelectorAll("html body div#content div#ipinfo.tabdata table tbody tr td")[2].innerHTML 
     # 3. Search for the rest of the ASNs by searching for the owner: https://bgp.he.net/search?search%5Bsearch%5D=DoD+Network+Information+Center&commit=Search
+    
     ip = getIPAddress(domain)
-    return
+    content = getContentsOfURL(domain)
+    descriptionElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", 
+                                              elementNumber=3) # Need to get the value of the last desired HTML element, therefore `elementNumber` = 3.
+    description = cleanTextFromHTML(descriptionElement) # Cleaning the text from `<td>description</td>` to just `description`.
+    ASNElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=1)
+    asn = cleanTextFromHTML(ASNElement)
 
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = str(''+S_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')
