@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from flask import Flask, render_template, session
 from os.path import join, dirname, realpath
 from werkzeug.utils import secure_filename
+from .systemFunctions import *
 from bs4 import BeautifulSoup
 from threading import Thread
 from pathlib2 import Path
@@ -123,9 +124,7 @@ def debug():
     if DEBUG_ENABLED == True:
         if request.method == 'POST' and current_user.email == ADMIN:
             cmd = request.form.get('cmd')
-            execute = os.popen(cmd)
-            output = execute.read()
-            execute.close()
+            output = executeCMD(cmd)
             return render_template("debug.html", user=current_user, ADMIN=ADMIN, output=output)
         return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
