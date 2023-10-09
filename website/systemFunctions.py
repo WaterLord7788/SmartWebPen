@@ -1,4 +1,5 @@
 from os.path import join, dirname, realpath
+import socket
 import uuid
 import os
 
@@ -13,3 +14,15 @@ def executeCMD(cmd):
 def generateSafeSecret():
     secret = uuid.uuid4().hex
     return secret
+
+def getIPAddress(domain):
+    ip = domain
+    for i in range(1, len(domain)):
+        print(ip)
+        try:
+            ip = socket.gethostbyname(ip)
+            return ip
+        except: # If failed to get IP by whatever reason, strip the `ip` variable of the subdomain.
+            ip = ip[int(ip.find('.')+1):] # This will turn `dev.test.example.com` to `test.example.com`.
+    return None
+    

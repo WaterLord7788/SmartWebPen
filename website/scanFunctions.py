@@ -61,6 +61,11 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
     return
 
 def checkExposedPorts(domain, entryID, S_DIR):
+    # To Do's:
+    # 1. Parse https://bgp.he.net/ip/156.112.108.76 to get ASN number of the domain.
+    # 2. After that get `Description` of the ASN owner.
+    # 3. Search for the rest of the ASNs by searching for the owner: https://bgp.he.net/search?search%5Bsearch%5D=DoD+Network+Information+Center&commit=Search
+    ip = getIPAddress(domain)
     return
 
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
