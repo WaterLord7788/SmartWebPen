@@ -24,7 +24,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
     V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
     V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
-    executeCMD('mkdir '+S_DIR+'')                # Create a folder, in case if it is missing.
+    executeCMD('mkdir '+S_DIR+'')               # Create a folder, in case if it is missing.
 
     for tool in tools.split():
         print('[*] Executing                   : '+tool+'')
@@ -54,7 +54,6 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
         elif method == 'useScreenshotting':
             resultFiles.append(useScreenshotting(domain, entryID, S_DIR))
-            pass
 
         elif method == 'checkExposedPorts':
             # Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
@@ -64,7 +63,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             for vuln in vulns:
-                resultFiles.append(checkVulnerableParameters(domain, entryID, S_DIR, V_DIR, sensitiveVulnerabilityType=vuln))
+                resultFiles.append(checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln))
 
     for file in files.split():
         print('[*] Using file                  : '+file+'')
@@ -86,7 +85,7 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
     S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
     V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
     V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
-    executeCMD('mkdir '+V_DIR+'')                # Create a folder, in case it being missing.
+    executeCMD('mkdir '+V_DIR+'')               # Create a folder, in case it being missing.
 
     for vulnerability in vulnerabilities.split():
         print('[*] Executing scanning for      : '+str(vulnerability)+'')

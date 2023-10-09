@@ -63,8 +63,8 @@ def useScreenshotting(domain, entryID, S_DIR):
 def checkExposedPorts(domain, entryID, S_DIR):
     return
 
-def checkVulnerableParameters(domain, entryID, S_DIR, V_DIR, sensitiveVulnerabilityType):
-    outputFile = str(''+V_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')
+def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
+    outputFile = str(''+S_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')
     cmd = str('cat '+S_DIR+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | gf '+sensitiveVulnerabilityType+' | tee -a '+outputFile)
     executeCMD(cmd)
     return outputFile
