@@ -109,6 +109,6 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
 
     print('[+] Resulting files created     : '+str(resultFiles)+'')
     resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-    Vulnerability.query.filter_by(entryID=entryID).first().resultFiles = str(Scan.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(resultFiles)
+    Vulnerability.query.filter_by(entryID=entryID).first().resultFiles = str(Vulnerability.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(resultFiles)
     db.session.commit()
     print('[+] Vulnerability scanning completed! Check logs in '+V_DIR+'')

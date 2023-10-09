@@ -32,7 +32,7 @@ GENERATED_OUTPUT_DIRECTORY = join(dirname(realpath(__file__)), GENERATED_OUTPUT_
 # This is for developers.
 # If you want to see general logging messages, such as: 127.0.0.1 - - [15/Feb/2013 10:52:22] "GET /index.html HTTP/1.1" 200
 # then go ahead and replace `True` to `False`.
-GENERAL_LOGGING_DISABLED = True
+GENERAL_LOGGING_DISABLED = False
 
 
 def create_app():
