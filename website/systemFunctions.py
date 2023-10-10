@@ -34,11 +34,24 @@ def getContentsOfURL(url):
     content = response.text
     return content
 
-def getElementsByCSSPath(content, CSSPath, elementNumber):
-    soup = bs4.BeautifulSoup(content, features="lxml")
-    elements = soup.select(CSSPath)
-    rawDescription = str(elements[elementNumber-1]) # `number-1` because the third element but we need to start from 0 in programming. So, third = 3-1 = 2.
-    return rawDescription
+def getElementsByCSSPath(content, CSSPath, elementNumber=None, maximum=None, cleanFromHTML=None):
+    if elementNumber != None:
+        soup = bs4.BeautifulSoup(content, features='lxml')
+        elements = soup.select(CSSPath)
+        rawDescription = str(elements[elementNumber-1]) # `number-1` because the third element but we need to start from 0 in programming. So, third = 3-1 = 2.
+        return rawDescription
+    else:
+        desiredElements = []
+        soup = bs4.BeautifulSoup(content, features='lxml')
+        print(CSSPath)
+        elements = soup.select(CSSPath)
+        for i in range(0, maximum): # Limit maximum number of ASN numbers -> can take a long time.
+            if '/AS' in str(elements[i]):
+                if cleanFromHTML:
+                    desiredElements.append(cleanTextFromHTML(str(elements[i])))
+                else:
+                    desiredElements.append(elements[i])
+        return desiredElements
 
 def cleanTextFromHTML(text):
     CLEAN = re.compile('<.*?>')

@@ -52,6 +52,9 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             resultFiles.append(checkAliveSubdomains(domain, entryID, S_DIR, stage='minimalDetails'))
             resultFiles.append(checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
 
+        if method == 'searchTargetsByASN':
+            resultFiles.append(searchTargetsByASN(domain, entryID, S_DIR))
+
         elif method == 'useScreenshotting':
             resultFiles.append(useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
 

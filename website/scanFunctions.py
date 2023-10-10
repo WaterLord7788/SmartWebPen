@@ -1,6 +1,6 @@
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
 from os.path import join, dirname, realpath
-from .systemFunctions import executeCMD
+from .systemFunctions import *
 import requests
 import asyncio
 import random
@@ -60,6 +60,12 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
     #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --threads '+threads+' --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d '+V_DIR)
     return
 
+def searchTargetsByASN(domain, entryID, S_DIR):
+    ip = getIPAddress(domain)
+    content = getContentsOfURL(domain)
+    ASNElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=1)
+    ASN = cleanTextFromHTML(ASNElement)
+
 def checkExposedPorts(domain, entryID, S_DIR):
     # To Do's:
     # 1. Parse https://bgp.he.net/ip/156.112.108.76 to get ASN number of the domain.
@@ -67,14 +73,16 @@ def checkExposedPorts(domain, entryID, S_DIR):
     # JS: document.querySelectorAll("html body div#content div#ipinfo.tabdata table tbody tr td")[2].innerHTML 
     # 3. Search for the rest of the ASNs by searching for the owner: https://bgp.he.net/search?search%5Bsearch%5D=DoD+Network+Information+Center&commit=Search
     
-    ip = getIPAddress(domain)
-    content = getContentsOfURL(domain)
-    descriptionElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", 
-                                              elementNumber=3) # Need to get the value of the last desired HTML element, therefore `elementNumber` = 3.
-    description = cleanTextFromHTML(descriptionElement) # Cleaning the text from `<td>description</td>` to just `description`.
-    ASNElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=1)
-    asn = cleanTextFromHTML(ASNElement)
+    content = getContentsOfURL('https://bgp.he.net/ip/156.112.108.76')
+    descriptionElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=3) # Need to get the value of the last desired HTML element, therefore `elementNumber` = 3.
+    description = cleanTextFromHTML(descriptionElement)
 
+    description = description.replace(' ', '+')
+    searchURL = str('https://bgp.he.net/search?search%5Bsearch%5D='+description+'&commit=Search')
+    searchURLContent = getContentsOfURL(searchURL)
+    # Need to get all the values of the desired HTML elements, therefore we do not supply `elementNumber` variable.
+    ASNumbers = getElementsByCSSPath(searchURLContent, CSSPath="html body div div#centerbody div#content div#search.tabdata table.w100p tbody tr td a", maximum=100, cleanFromHTML=True)
+    
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = str(''+S_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')
     cmd = str('cat '+S_DIR+''+domain+'-*-'+entryID+'.txt | unfurl format %d | sort -u | gf '+sensitiveVulnerabilityType+' | tee -a '+outputFile)
@@ -82,7 +90,7 @@ def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType
     return outputFile
 
 def interestingSubsAlive(domain, entryID, S_DIR):
-    outputFile = str(''+V_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt')
+    outputFile = str(''+S_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt')
     cmd = str('cat '+S_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt | unfurl format %d | httpx -no-color -silent | sort -u | tee '+outputFile)
     executeCMD(cmd)
     return outputFile

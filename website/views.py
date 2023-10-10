@@ -52,6 +52,7 @@ def home():
         methods.append('customWordlistForSubdomains')
         files.append(request.form.get('customWordlistForSubdomains'))
     if request.form.get('useAliveCheck'):        methods.append('checkAliveSubdomains')
+    if request.form.get('searchTargetsByASN'):   methods.append('searchTargetsByASN')
     if request.form.get('useScreenshotting'):    methods.append('useScreenshotting')
     if request.form.get('exposedPorts'):         methods.append('checkExposedPorts')
     if request.form.get('vulnerableParameters'): methods.append('checkVulnerableParameters')
