@@ -153,3 +153,4 @@ test.py
 */*/__pycache__/
 */__pycache__/
 resume.cfg
+errors.txt

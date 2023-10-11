@@ -65,14 +65,19 @@ def cleanTextFromHTML(text):
     return cleanText
 
 def getIPsFromASN(ASN, entryID, S_DIR):
-    outputFile = str('')
+    outputFile = str(''+S_DIR+''+domain+'-IPs-from-ASNs-'+entryID+'.txt')
     cmd = """
     #!/bin/bash
+    # one-liner to convert ASN to ip addresses. Results will be appended to `ips.out`. sander@cedsys.nl | 1-7-2017
+    # requires: apt-get install prips
 
-    # For-loop to run `ASN to IP ranges` transformation for each ASN.
-
+    for asn in """+ASN+"""; #AS30548 - for Aruba;
+        do $(for range in $(echo $(whois -h whois.radb.net -- "-i origin $asn" | grep -Eo "([0-9.]+){4}/[0-9]+") | sed ':a;N;$!ba;s/\\n/ /g'); 
+            do prips $range >> """+outputFile+"""; 
+        done);
+    done
     """
-    executeCMD('')
+    executeCMD(cmd)
     return outputFile
 
 def checkValidASNumbers(ASNumbers):

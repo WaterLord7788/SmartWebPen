@@ -71,14 +71,20 @@ def searchTargetsByASN(domain, entryID, S_DIR):
                                      CSSPath="html body div div#centerbody div#content div#search.tabdata table.w100p tbody tr td a", 
                                      maximum=5, cleanFromHTML=True)
     ASNumbers = checkValidASNumbers(ASNumbers)
+    for ASN in ASNumbers:
+        outputFile = getIPsFromASN(ASN, entryID, S_DIR)
+    return outputFile
 
 def checkExposedPorts(domain, entryID, S_DIR):
     # To Do's:
-    # 1. Parse https://bgp.he.net/ip/156.112.108.76 to get ASN number of the domain.
-    # 2. After that get `Description` of the ASN owner.
-    # JS: document.querySelectorAll("html body div#content div#ipinfo.tabdata table tbody tr td")[2].innerHTML 
-    # 3. Search for the rest of the ASNs by searching for the owner: https://bgp.he.net/search?search%5Bsearch%5D=DoD+Network+Information+Center&commit=Search
-   return
+    # 1. From `...IPs-from-ASNs...` file check for alive targets.
+    # 2. Check for exposed ports by implementing the methodogy below:
+    #    https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
+    
+    # outputFile = str('cat '+S_DIR+''+domain+'-alive-IPs-from-ASNs-'+entryID+'.txt')
+    # cmd = str('cat '+S_DIR+''+domain+'-IPs-from-ASNs-'+entryID+'.txt | httpx | tee '+outputFile)
+    # executeCMD(cmd)
+    # return outputFile
     
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = str(''+S_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')

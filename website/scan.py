@@ -53,15 +53,12 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             resultFiles.append(checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
 
         if method == 'searchTargetsByASN':
-            filesToAdd = searchTargetsByASN(domain, entryID, S_DIR) # searchTargetsByASN() function returns many files
-            for file in filesToAdd:
-                resultFiles.append(file)
+            resultFiles.append(searchTargetsByASN(domain, entryID, S_DIR))
 
         elif method == 'useScreenshotting':
             resultFiles.append(useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
 
         elif method == 'checkExposedPorts':
-            # Also, implement this: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
             resultFiles.append(checkExposedPorts(domain, entryID, S_DIR))
 
         elif method == 'checkVulnerableParameters':

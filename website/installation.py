@@ -95,3 +95,13 @@ def installTools():
         print('[*] Installing eyewitness')
         os.popen('apt install eyewitness')
         print('[+] Done installing eyewitness!'); print()
+
+    com_str = 'which prips'
+    command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
+    (output, error) = command.communicate()
+    if 'prips' not in str(output):
+        # Installing dnsx
+        print('[-] Prips not present')
+        print('[*] Installing prips')
+        os.popen('apt install prips')
+        print('[+] Done installing prips!'); print()
