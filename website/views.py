@@ -217,14 +217,14 @@ def redirectToUrl():
 @login_required
 def getFile():
     # HTTP GET parameter 'file' would look like in URL: http://127.0.0.1/file?file=subdomains/army.mil-amass-402766.txt
-    if request.args.get('file'):
-        file = request.args.get('file')
-        filePath = file
-        contents = Path(filePath).read_text().replace('\n', '<br>')
-        return render_template('file.html', file=file, contents=contents, user=current_user)
-    else:
+    if not request.args.get('file'):
         flash('No <b>file</b> parameter supplied!', category='error')
-    return render_template('file.html', user=current_user)
+        return render_template('file.html', user=current_user)
+
+    file = request.args.get('file')
+    filePath = file
+    contents = Path(filePath).read_text().replace('\n', '<br>')
+    return render_template('file.html', file=file, contents=contents, user=current_user)
 
 
 @views.route('/delete-scan', methods=['POST'])

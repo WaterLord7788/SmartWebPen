@@ -1,5 +1,5 @@
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
-from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for
+from flask import Blueprint, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
 from .models import User, Scan, Vulnerability
@@ -53,7 +53,9 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             resultFiles.append(checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
 
         if method == 'searchTargetsByASN':
-            resultFiles.append(searchTargetsByASN(domain, entryID, S_DIR))
+            filesToAdd = searchTargetsByASN(domain, entryID, S_DIR) # searchTargetsByASN() function returns many files
+            for file in filesToAdd:
+                resultFiles.append(file)
 
         elif method == 'useScreenshotting':
             resultFiles.append(useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))

@@ -88,7 +88,7 @@ def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType
 
 def interestingSubsAlive(domain, entryID, S_DIR):
     outputFile = str(''+S_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt')
-    cmd = str('cat '+S_DIR+''+domain+'-params-interestingsubs-alive-'+entryID+'.txt | unfurl format %d | httpx -no-color -silent | sort -u | tee '+outputFile)
+    cmd = str('cat '+S_DIR+''+domain+'-params-interestingsubs-'+entryID+'.txt | unfurl format %d | httpx -no-color -silent | sort -u | tee '+outputFile)
     executeCMD(cmd)
     return outputFile
 
