@@ -62,9 +62,15 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
 
 def searchTargetsByASN(domain, entryID, S_DIR):
     ip = getIPAddress(domain)
-    content = getContentsOfURL(domain)
-    ASNElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=1)
-    ASN = cleanTextFromHTML(ASNElement)
+    content = getContentsOfURL(str('https://bgp.he.net/ip/'+ip))
+    descriptionElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=3) # Need to get the value of the last desired HTML element, therefore `elementNumber` = 3.
+    description = cleanTextFromHTML(descriptionElement).replace(' ', '+')
+    searchURL = str('https://bgp.he.net/search?search%5Bsearch%5D='+description+'&commit=Search')
+    searchURLContent = getContentsOfURL(searchURL)
+    ASNumbers = getElementsByCSSPath(searchURLContent, 
+                                     CSSPath="html body div div#centerbody div#content div#search.tabdata table.w100p tbody tr td a", 
+                                     maximum=5, cleanFromHTML=True)
+    ASNumbers = checkValidASNumbers(ASNumbers)
 
 def checkExposedPorts(domain, entryID, S_DIR):
     # To Do's:
@@ -72,16 +78,7 @@ def checkExposedPorts(domain, entryID, S_DIR):
     # 2. After that get `Description` of the ASN owner.
     # JS: document.querySelectorAll("html body div#content div#ipinfo.tabdata table tbody tr td")[2].innerHTML 
     # 3. Search for the rest of the ASNs by searching for the owner: https://bgp.he.net/search?search%5Bsearch%5D=DoD+Network+Information+Center&commit=Search
-    
-    content = getContentsOfURL('https://bgp.he.net/ip/156.112.108.76')
-    descriptionElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=3) # Need to get the value of the last desired HTML element, therefore `elementNumber` = 3.
-    description = cleanTextFromHTML(descriptionElement)
-
-    description = description.replace(' ', '+')
-    searchURL = str('https://bgp.he.net/search?search%5Bsearch%5D='+description+'&commit=Search')
-    searchURLContent = getContentsOfURL(searchURL)
-    # Need to get all the values of the desired HTML elements, therefore we do not supply `elementNumber` variable.
-    ASNumbers = getElementsByCSSPath(searchURLContent, CSSPath="html body div div#centerbody div#content div#search.tabdata table.w100p tbody tr td a", maximum=100, cleanFromHTML=True)
+   return
     
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = str(''+S_DIR+''+domain+'-params-'+sensitiveVulnerabilityType+'-'+entryID+'.txt')

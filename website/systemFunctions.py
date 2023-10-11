@@ -43,17 +43,43 @@ def getElementsByCSSPath(content, CSSPath, elementNumber=None, maximum=None, cle
     else:
         desiredElements = []
         soup = bs4.BeautifulSoup(content, features='lxml')
-        print(CSSPath)
         elements = soup.select(CSSPath)
+        
+        if maximum == 'max':
+            maximum = len(elements)
+        elif maximum > len(elements):
+            maximum = len(elements)
+
         for i in range(0, maximum): # Limit maximum number of ASN numbers -> can take a long time.
             if '/AS' in str(elements[i]):
                 if cleanFromHTML:
                     desiredElements.append(cleanTextFromHTML(str(elements[i])))
                 else:
                     desiredElements.append(elements[i])
+
         return desiredElements
 
 def cleanTextFromHTML(text):
     CLEAN = re.compile('<.*?>')
     cleanText = CLEAN.sub('', text)
     return cleanText
+
+def getIPsFromASN(ASN, entryID, S_DIR):
+    outputFile = str('')
+    cmd = """
+    #!/bin/bash
+
+    # For-loop to run `ASN to IP ranges` transformation for each ASN.
+
+    """
+    executeCMD('')
+    return outputFile
+
+def checkValidASNumbers(ASNumbers):
+    validASNumbers = []
+    for ASN in ASNumbers:
+        ASNDataContent = getContentsOfURL(str('https://bgp.he.net/'+ASN))
+        if 'Prefixes Originated (v4): 0' not in ASNDataContent:
+            if 'has not been visible in the global routing table since' not in ASNDataContent:
+                validASNumbers.append(ASN)
+    return validASNumbers
