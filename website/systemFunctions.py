@@ -64,7 +64,7 @@ def cleanTextFromHTML(text):
     cleanText = CLEAN.sub('', text)
     return cleanText
 
-def getIPsFromASN(ASN, entryID, S_DIR):
+def getIPsFromASN(domain, ASN, entryID, S_DIR):
     outputFile = str(''+S_DIR+''+domain+'-IPs-from-ASNs-'+entryID+'.txt')
     cmd = """
     #!/bin/bash

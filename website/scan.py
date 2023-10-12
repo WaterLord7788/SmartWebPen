@@ -45,6 +45,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         elif tool == 'crt.sh':
             resultFiles.append(crtsh(domain, entryID, S_DIR))
 
+    includeASN = False
     for method in methods.split():
         print('[*] Using method                : '+method+'')
 
@@ -53,13 +54,14 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             resultFiles.append(checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
 
         if method == 'searchTargetsByASN':
+            includeASN = True
             resultFiles.append(searchTargetsByASN(domain, entryID, S_DIR))
 
         elif method == 'useScreenshotting':
             resultFiles.append(useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
 
         elif method == 'checkExposedPorts':
-            resultFiles.append(checkExposedPorts(domain, entryID, S_DIR))
+            resultFiles.append(checkExposedPorts(domain, entryID, S_DIR, includeASN))
 
         elif method == 'checkVulnerableParameters':
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
