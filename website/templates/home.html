@@ -67,7 +67,8 @@
                 </th>
 
                 <th>
-                  <input type="checkbox" value="true" name="useAliveCheck" id="flexCheckDefault">
+                  <input type="checkbox" value="true" name="useAliveCheck" id="flexCheckDefault"
+                      onclick="if(document.getElementById('searchTargetsByASN').disabled == true){document.getElementById('searchTargetsByASN').disabled = false}else{document.getElementById('searchTargetsByASN').disabled = true};">
                   <label for="flexCheckDefault">
                     Scan for <b>alive</b> domains
                   </label>
@@ -93,9 +94,9 @@
                   value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="useCustomWordlistForSubdomains" disabled="true">
                 </th>
                 <th>
-                  <input type="checkbox" value="true" name="exposedPorts" id="flexCheckDefault">
+                  <input type="checkbox" value="true" name="searchTargetsByASN" id="searchTargetsByASN">
                   <label for="flexCheckDefault">
-                    <b>Exposed Ports</b>
+                    <b>ASN Search</b>
                   </label>
                 </th>
                 <th>
@@ -104,7 +105,12 @@
                     <b>Vulnerable Parameters</b>
                   </label>
                 </th>
-                <th></th>
+                <th>
+                  <input type="checkbox" value="true" name="exposedPorts" id="flexCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>Exposed Ports</b>
+                  </label>
+                </th>
               </tr>
             </tbody>
           </table>
@@ -193,7 +199,9 @@
   for(var i = 0; i < elms.length; i++){
     elms[i].disabled = true;
   }
+
   document.getElementById('wordlist').disabled = true;
+  document.getElementById('searchTargetsByASN').disabled = true;
 </script>
 
 {% endautoescape %}

@@ -21,7 +21,6 @@ def generateSafeSecret():
 def getIPAddress(domain):
     ip = domain
     for i in range(1, len(domain)):
-        print(ip)
         try:
             ip = socket.gethostbyname(ip)
             return ip
@@ -79,6 +78,35 @@ def getIPsFromASN(domain, ASN, entryID, S_DIR):
     """
     executeCMD(cmd)
     return outputFile
+
+def getIPsFromAliveTargets(inputFile):
+    IPAdresses = []
+    with open(inputFile) as file:
+        for domain in file:
+            ip = getIPAddress(domain)
+            IPAdresses.append(ip)
+    return IPAdresses
+
+def getASNFromIPs(IPAdresses):
+    # Implemented this: https://www.team-cymru.com/ip-asn-mapping
+    ASNumbers = []
+    for ip in IPAdresses:
+        cmd = str('whois -h whois.cymru.com " -v '+ip+'"')
+        output = executeCMD(cmd)
+        output = output.split('\n')
+
+        information = output[0]
+        data = output[1]
+        data = data.split('|')
+
+        cleanedData = []
+        for entry in data:
+            entry = entry.strip()
+            cleanedData.append(entry)
+
+        ASNumber = cleanedData[0]
+        ASNumbers.append(ASNumber)
+    return ASNumbers
 
 def checkValidASNumbers(ASNumbers):
     validASNumbers = []
