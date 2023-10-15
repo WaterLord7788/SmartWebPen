@@ -60,13 +60,13 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
     #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --threads '+threads+' --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d '+V_DIR)
     return
 
-def searchTargetsByASN(domain, entryID, S_DIR, checkAliveSubdomains):
-    if checkAliveSubdomains == False: return None
+def searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains):
+    if willCheckAliveSubdomains == False: return None
     allOutputFiles = []
 
     # Get IPs of alive targets.
     inputFile = str(''+S_DIR+''+domain+'-alive-'+entryID+'.txt')
-    IPAdresses = getIPsFromAliveTargets(domain, inputFile=inputFile)
+    IPAdresses = getIPsFromAliveTargets(inputFile)
 
     # Get all ASN numbers from alive targets.
     ASNumbers = getASNFromIPs(IPAdresses=IPAdresses)

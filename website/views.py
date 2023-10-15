@@ -93,8 +93,7 @@ def home():
     
     flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
     flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
-    
-    #flash(str('Something went <b>wrong</b>! Try again..'), category='error')
+    return render_template("base.html", user=current_user)
 
 
 def allowed_file(filename):

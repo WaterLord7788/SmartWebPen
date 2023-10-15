@@ -81,7 +81,7 @@ def getIPsFromASN(domain, ASN, entryID, S_DIR):
 
 def getIPsFromAliveTargets(inputFile):
     IPAdresses = []
-    with open(inputFile) as file:
+    with open(str(inputFile), 'r') as file:
         for domain in file:
             ip = getIPAddress(domain)
             IPAdresses.append(ip)
