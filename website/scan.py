@@ -30,20 +30,20 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print(f'[*] Executing                   : {tool}')
 
         if tool == 'amass':
-            addScanFileDB(amass(domain, entryID, S_DIR))
+            addScanFileDB(entryID, amass(domain, entryID, S_DIR))
 
         elif tool == 'subfinder':
-            addScanFileDB(subfinder(domain, entryID, S_DIR))
+            addScanFileDB(entryID, subfinder(domain, entryID, S_DIR))
 
         elif tool == 'gau':
-            addScanFileDB(gau(domain, entryID, S_DIR))
+            addScanFileDB(entryID, gau(domain, entryID, S_DIR))
 
         elif tool == 'waybackurls':
-            addScanFileDB(waybackurls(domain, entryID, S_DIR, stage='onlySubdomains'))
-            addScanFileDB(waybackurls(domain, entryID, S_DIR, stage='everything'))
+            addScanFileDB(entryID, waybackurls(domain, entryID, S_DIR, stage='onlySubdomains'))
+            addScanFileDB(entryID, waybackurls(domain, entryID, S_DIR, stage='everything'))
 
         elif tool == 'crt.sh':
-            addScanFileDB(crtsh(domain, entryID, S_DIR))
+            addScanFileDB(entryID, crtsh(domain, entryID, S_DIR))
 
     willIncludeASN = False
     willCheckAliveSubdomains = False
@@ -52,8 +52,8 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
         if method == 'checkAliveSubdomains':
             willCheckAliveSubdomains = True
-            addScanFileDB(checkAliveSubdomains(domain, entryID, S_DIR, stage='minimalDetails'))
-            addScanFileDB(checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
+            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, stage='minimalDetails'))
+            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
 
         if method == 'searchTargetsByASN':
             willIncludeASN = True
@@ -61,24 +61,24 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             # so we need to add each file separately.
             outputFiles = searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains)
             for file in outputFiles:
-                addScanFileDB(file)
+                addScanFileDB(entryID, file)
 
         elif method == 'useScreenshotting':
-            addScanFileDB(useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
+            addScanFileDB(entryID, useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
 
         elif method == 'checkExposedPorts':
-            addScanFileDB(checkExposedPorts(domain, entryID, S_DIR, includeASN=willIncludeASN))
+            addScanFileDB(entryID, checkExposedPorts(domain, entryID, S_DIR, includeASN=willIncludeASN))
 
         elif method == 'checkVulnerableParameters':
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             # As there are many entries in `vulns` variable, we need to scan each entry separately.
             for vuln in vulns:
-                addScanFileDB(checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln))
-            addScanFileDB(interestingSubsAlive(domain, entryID, S_DIR))
+                addScanFileDB(entryID, checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln))
+            addScanFileDB(entryID, interestingSubsAlive(domain, entryID, S_DIR))
 
         elif method == 'generateSubdomainWordlist':
-            addScanFileDB(generateWordlist(domain, entryID, S_DIR, wordlist='subdomain'))
+            addScanFileDB(entryID, generateWordlist(domain, entryID, S_DIR, wordlist='subdomain'))
 
     for file in files.split():
         print(f'[*] Using file                  : {file}')
@@ -86,6 +86,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     cleanResultFiles(type='Scan', entryID=entryID)
     print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Subdomain scanning completed! Check logs in {S_DIR}')
+    saveDB()
 
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
@@ -103,20 +104,21 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
         print(f'[*] Executing scanning for      : {str(vulnerability)}')
 
         if vulnerability == 'CRLF':
-            addVulnFileDB(CRLF(domain, entryID, S_DIR, V_DIR))
+            addVulnFileDB(entryID, CRLF(domain, entryID, S_DIR, V_DIR))
 
         elif vulnerability == 'XSS':
-            addVulnFileDB(XSS(domain, entryID, S_DIR, V_DIR))
+            addVulnFileDB(entryID, XSS(domain, entryID, S_DIR, V_DIR))
 
         elif vulnerability == 'Nuclei':
-            addVulnFileDB(nuclei(domain, entryID, S_DIR, V_DIR))
+            addVulnFileDB(entryID, nuclei(domain, entryID, S_DIR, V_DIR))
 
         elif vulnerability == 'SQLi':
-            addVulnFileDB(SQLi(domain,entryID, S_DIR, V_DIR))
+            addVulnFileDB(entryID, SQLi(domain,entryID, S_DIR, V_DIR))
 
         elif vulnerability == 'Github':
-            addVulnFileDB(github(domain, entryID, S_DIR, V_DIR))
+            addVulnFileDB(entryID, github(domain, entryID, S_DIR, V_DIR))
 
     cleanResultFiles(type='Vulnerability', entryID=entryID)
     print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Vulnerability scanning completed! Check logs in {V_DIR}')
+    saveDB()

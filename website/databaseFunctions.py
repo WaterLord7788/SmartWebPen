@@ -19,3 +19,6 @@ def cleanResultFiles(type, entryID):
         resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
         Vulnerability.query.filter_by(entryID=entryID).first().resultFiles = resultFiles
     db.session.commit()
+
+def saveDB():
+    db.session.commit()

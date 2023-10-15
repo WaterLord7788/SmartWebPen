@@ -78,7 +78,7 @@ def home():
     # Create scanning report entry in database.db.
     NEW_SCAN = Scan(url=domain, methods=methods, tools=tools, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
     db.session.add(NEW_SCAN)
-    db.session.commit()
+    saveDB()
 
     # Start executing commands in scan.py file.
     executeSubdomainEnumeration(domain, tools, methods, files, entryID)
@@ -87,7 +87,7 @@ def home():
     if request.form.get('doVulnerabilityScanning'):
         NEW_SECURITY_SCAN = Vulnerability(url=domain, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
         db.session.add(NEW_SECURITY_SCAN)
-        db.session.commit()
+        saveDB()
 
         # Start executing commands in scan.py file.
         executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)

@@ -32,7 +32,7 @@ def waybackurls(domain, entryID, S_DIR, stage):
         executeCMD(cmd)
     elif stage == 'everything':
         outputFile = f'{S_DIR}{domain}-waybackurls+raw-{entryID}.txt'
-        cmd = f'waybackurls {domain} | sort -u | tee {outputFile}''
+        cmd = f'waybackurls {domain} | sort -u | tee {outputFile}'
         executeCMD(cmd)
     return outputFile
 
@@ -90,7 +90,7 @@ def searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains):
     outputFile = f'{S_DIR}{domain}-IPs-from-ASNs-alive-{entryID}.txt'
     with open(outputFile, 'a') as file:
         for IPAdress in aliveIPsFromASNumbers:
-            file.write(f'{IPAdress}\n'))
+            file.write(f'{IPAdress}\n')
     allOutputFiles.append(outputFile)
 
     return allOutputFiles
