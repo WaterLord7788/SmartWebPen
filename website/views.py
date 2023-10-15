@@ -37,10 +37,10 @@ def home():
     if request.method == 'GET':           return render_template('home.html', user=current_user)
     if not request.form.get('subdomain'): return render_template('home.html', user=current_user, state="No subdomain")
 
-    # Subdomain sanitization
+    # Subdomain sanitization.
     domain = request.form.get('subdomain')
-    domain = domain.replace('/', '').replace('\\', '').replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
-    # Get the required options
+    domain = sanitizeInput(domain)
+    # Get the required options.
     tools, methods, files, resultFiles, vulnerabilities = [], [], [], [], []
 
     if request.form.get('useAMASS'):             tools.append('amass')

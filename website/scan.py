@@ -15,19 +15,19 @@ import json
 
 
 def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
-    print(); print('[+] Starting subdomain enumeration against '+str(domain)+'!')
-    print('[*] Using the following tools   : '+str(tools)+'')
-    print('[*] Using the following methods : '+str(methods)+'')
-    print('[*] Using the following files   : '+str(files)+'')
+    print(); print(f'[+] Starting subdomain enumeration against {str(domain)}!')
+    print(f'[*] Using the following tools   : {str(tools)}')
+    print(f'[*] Using the following methods : {str(methods)}')
+    print(f'[*] Using the following files   : {str(files)}')
     
     S_DIR = SUBDOMAIN_SCAN_OUTPUT_DIRECTORY
     S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
     V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
     V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
-    executeCMD('mkdir '+S_DIR+'')               # Create a folder, in case if it is missing.
+    executeCMD(f'mkdir {S_DIR}')                # Create a folder, in case if it is missing.
 
     for tool in tools.split():
-        print('[*] Executing                   : '+tool+'')
+        print(f'[*] Executing                   : {tool}')
 
         if tool == 'amass':
             addScanFileDB(amass(domain, entryID, S_DIR))
@@ -48,7 +48,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     willIncludeASN = False
     willCheckAliveSubdomains = False
     for method in methods.split():
-        print('[*] Using method                : '+method+'')
+        print(f'[*] Using method                : {method}')
 
         if method == 'checkAliveSubdomains':
             willCheckAliveSubdomains = True
@@ -81,26 +81,26 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             addScanFileDB(generateWordlist(domain, entryID, S_DIR, wordlist='subdomain'))
 
     for file in files.split():
-        print('[*] Using file                  : '+file+'')
+        print(f'[*] Using file                  : {file}')
 
     cleanResultFiles(type='Scan', entryID=entryID)
-    print('[+] Resulting files created     : '+str(resultFiles)+'')
-    print('[+] Subdomain scanning completed! Check logs in '+S_DIR+'')
+    print(f'[+] Resulting files created     : {str(resultFiles)}')
+    print(f'[+] Subdomain scanning completed! Check logs in {S_DIR}')
 
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
-    print(); print('[*] Starting vulnerability scanning against '+str(domain)+'!')
-    print('[*] Searching vulnerabilities   : '+str(vulnerabilities)+'')
-    print('[*] Using the following files   : '+str(files)+'')
+    print(); print(f'[*] Starting vulnerability scanning against {str(domain)}!')
+    print(f'[*] Searching vulnerabilities   : {vulnerabilities}')
+    print(f'[*] Using the following files   : {str(files)}')
 
     S_DIR = SUBDOMAIN_SCAN_OUTPUT_DIRECTORY     # To make code less confusing. Less text = more understandable.
     S_DIR = S_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/subdomains/<entryID>/
     V_DIR = VULNERABILITY_SCAN_OUTPUT_DIRECTORY
     V_DIR = V_DIR + entryID + '/'               # Example: /root/Desktop/SmartWebPen/website/generated/vulnerabilities/<entryID>/
-    executeCMD('mkdir '+V_DIR+'')               # Create a folder, in case it being missing.
+    executeCMD(f'mkdir {V_DIR}')                # Create a folder, in case it being missing.
 
     for vulnerability in vulnerabilities.split():
-        print('[*] Executing scanning for      : '+str(vulnerability)+'')
+        print(f'[*] Executing scanning for      : {str(vulnerability)}')
 
         if vulnerability == 'CRLF':
             addVulnFileDB(CRLF(domain, entryID, S_DIR, V_DIR))
@@ -118,5 +118,5 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
             addVulnFileDB(github(domain, entryID, S_DIR, V_DIR))
 
     cleanResultFiles(type='Vulnerability', entryID=entryID)
-    print('[+] Resulting files created     : '+str(resultFiles)+'')
-    print('[+] Vulnerability scanning completed! Check logs in '+V_DIR+'')
+    print(f'[+] Resulting files created     : {str(resultFiles)}')
+    print(f'[+] Vulnerability scanning completed! Check logs in {V_DIR}')

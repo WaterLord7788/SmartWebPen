@@ -90,16 +90,13 @@ def searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains):
     outputFile = f'{S_DIR}{domain}-IPs-from-ASNs-alive-{entryID}.txt'
     with open(outputFile, 'a') as file:
         for IPAdress in aliveIPsFromASNumbers:
-            file.write(str(IPAdress+'\n'))
+            file.write(f'{IPAdress}\n'))
     allOutputFiles.append(outputFile)
 
     return allOutputFiles
 
 def checkExposedPorts(domain, entryID, S_DIR, includeASN=False):
-    # To Do's:
-    # 1. From `...IPs-from-ASNs...` file check for alive targets.
-    # 2. Check for exposed ports by implementing the methodogy below:
-    #    https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
+    # Implemented: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
     cmd = """
     #!/bin/bash
     for sub in $(cat {inputFile}); 
@@ -108,14 +105,14 @@ def checkExposedPorts(domain, entryID, S_DIR, includeASN=False):
     """
 
     if includeASN == False:
-        outputFile = str(''+S_DIR+''+domain+'-exposed-ports-of-alive-'+entryID+'.txt')
-        inputFile = str('cat '+S_DIR+''+domain+'-alive-'+entryID+'.txt | ')
+        outputFile = f'{S_DIR}{domain}-exposed-ports-of-alive-{entryID}.txt'
+        inputFile = f'{S_DIR}{domain}-alive-{entryID}.txt'
         cmd = cmd.format(inputFile=inputFile, outputFile=outputFile)
         executeCMD(cmd)
         return outputFile
     
-    outputFile = str(''+S_DIR+''+domain+'-exposed-ports-of-IPs-'+entryID+'.txt')
-    inputFile = str(''+S_DIR+''+domain+'-IPs-from-ASNs-'+entryID+'.txt')
+    outputFile = f'{S_DIR}{domain}-exposed-ports-of-IPs-{entryID}.txt'
+    inputFile = f'{S_DIR}{domain}-IPs-from-ASNs-{entryID}.txt'
     cmd = cmd.format(inputFile=inputFile, outputFile=outputFile)
     executeCMD(cmd)
 

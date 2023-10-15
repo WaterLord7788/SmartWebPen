@@ -108,22 +108,25 @@ def getASNFromIPs(IPAdresses):
         ASNumbers.append(ASNumber)
     return ASNumbers
 
-def checkValidASNumbers(ASNumbers):
-    validASNumbers = []
-    for ASN in ASNumbers:
-        ASNDataContent = getContentsOfURL(str('https://bgp.he.net/'+ASN))
-        if 'Prefixes Originated (v4): 0' not in ASNDataContent:
-            if 'has not been visible in the global routing table since' not in ASNDataContent:
-                validASNumbers.append(ASN)
-    return validASNumbers
-
 def generateSubdomainWordlist(inputFile):
     subdomain_pattern = r'\b([a-zA-Z0-9-]+)(?=\.)'
     nonCleanSubdomains = []
-    with open('/root/Desktop/SmartWebPen/website/generated/subdomains/652214/ca.gov-amass-652214.txt', 'r') as file:
+    with open(inputFile, 'r') as file:
         for domain in file:
             subdomains = re.findall(subdomain_pattern, domain)
             for word in subdomains:
                 nonCleanSubdomains.append(word)
     uniqueSubdomains = list(set(nonCleanSubdomains))
     return uniqueSubdomains
+
+def sanitizeInput(string):
+    semiSafeString = string.replace('http', '').replace('https', '').replace(':', '').replace(' ', '')
+    dangerousCharacters = [
+        '"', "'", '`', '!', '#', '$', 
+        '<', '>', ';', '(', ')', '[', 
+        ']', '%', '&', '{', '}', '@',
+        '-', '|', '*', '^', ',', '=',
+        '/', '\\']
+    for character in dangerousCharacters:
+        safeString = semiSafeString.replace(character, '')
+    return safeString
