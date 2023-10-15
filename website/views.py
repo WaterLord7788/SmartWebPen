@@ -56,6 +56,7 @@ def home():
     if request.form.get('useScreenshotting'):    methods.append('useScreenshotting')
     if request.form.get('exposedPorts'):         methods.append('checkExposedPorts')
     if request.form.get('vulnerableParameters'): methods.append('checkVulnerableParameters')
+    if request.form.get('generateSubdomainWordlist'): methods.append('generateSubdomainWordlist')
 
     if request.form.get('doVulnerabilityScanning'):
         if request.form.get('CRLF'):                                vulnerabilities.append('CRLF')

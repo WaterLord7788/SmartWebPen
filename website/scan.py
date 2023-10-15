@@ -78,7 +78,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             addScanFileDB(interestingSubsAlive(domain, entryID, S_DIR))
 
         elif method == 'generateSubdomainWordlist':
-            addScanFileDB(generateWordlist(domain, entryID, S_DIR))
+            addScanFileDB(generateWordlist(domain, entryID, S_DIR, wordlist='subdomain'))
 
     for file in files.split():
         print('[*] Using file                  : '+file+'')
