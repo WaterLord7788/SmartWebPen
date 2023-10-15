@@ -180,6 +180,38 @@
               </tr>
             </tbody>
           </table>
+          <table>
+            <tbody>
+              <tr>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="createWordlists" id="createWordlists" 
+                      onlick="var elms = document.querySelectorAll(`[id='wordlistItems']`);for(var i = 0; i < elms.length; i++){if(elms[i].disabled == true){elms[i].disabled = false;}else{elms[i].disabled = true;}}">
+                  <label for="flexCheckDefault">
+                    <b>Create unique wordlists</b>
+                  </label>
+                </th>
+                <th>
+                </th>
+                <th>
+                </th>
+                <th>
+                </th>
+                <th style="width: 40%">
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="generateSubdomainWordlist" id="wordlistItems">
+                  <label for="flexCheckDefault">
+                    <b>Generate subdomain wordlist</b>
+                  </label>
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </tbody>
+          </table>
           <div/align="center" class="submit-button" style="margin-top: 10px;">
             <button type="submit" class="separate-button btn btn-primary">Start Scanning</button>
             <br>
@@ -194,14 +226,23 @@
 
 <!-- Set elements' with ID of `vulnCheckDefault` and `wordlist` disabled value to true -->
 <script>
+  // Disable elements.
   var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);
   console.log(elms);
   for(var i = 0; i < elms.length; i++){
     elms[i].disabled = true;
   }
 
+  // Disable elements.
   document.getElementById('wordlist').disabled = true;
   document.getElementById('searchTargetsByASN').disabled = true;
+
+  // Disable elements.
+  var elms = document.querySelectorAll(`[id='wordlistItems']`);
+  console.log(elms);
+  for(var i = 0; i < elms.length; i++){
+    elms[i].disabled = true;
+  }
 </script>
 
 {% endautoescape %}

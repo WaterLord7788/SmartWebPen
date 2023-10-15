@@ -162,3 +162,7 @@ def SQLi(domain, entryID, S_DIR, V_DIR):
 
 def github(domain, entryID, S_DIR, V_DIR):
     return
+
+def generateWordlist(domain, entryID, S_DIR):
+    inputFile = f'{S_DIR}{domain}-alive-{entryID}.txt'
+    uniqueSubdomains = generateSubdomainWordlist(inputFile)
