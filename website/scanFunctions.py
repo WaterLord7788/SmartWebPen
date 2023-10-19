@@ -61,40 +61,20 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
     #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --threads '+threads+' --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d '+V_DIR)
     return
 
-def searchTargetsByASN(domain, entryID, S_DIR, checkAlive):
-    if checkAlive == False: return None
-    allOutputFiles = []
-
-    # Get IPs of alive targets.
-    inputFile = f'{S_DIR}{domain}-alive-{entryID}.txt'
-    IPAdresses = getIPsFromAliveTargets(inputFile)
-
-    # Get all ASN numbers from alive targets.
-    ASNumbers = getASNFromIPs(IPAdresses=IPAdresses)
-
-    # Get IPs from ASN numbers.
+def searchTargetsByASN(domain, entryID, S_DIR):
+    ip = getIPAddress(domain)
+    content = getContentsOfURL(str('https://bgp.he.net/ip/'+ip))
+    descriptionElement = getElementsByCSSPath(content, CSSPath="html body div#content div#ipinfo.tabdata table tbody tr td", elementNumber=3) # Need to get the value of the last desired HTML element, therefore `elementNumber` = 3.
+    description = cleanTextFromHTML(descriptionElement).replace(' ', '+')
+    searchURL = str('https://bgp.he.net/search?search%5Bsearch%5D='+description+'&commit=Search')
+    searchURLContent = getContentsOfURL(searchURL)
+    ASNumbers = getElementsByCSSPath(searchURLContent, 
+                                     CSSPath="html body div div#centerbody div#content div#search.tabdata table.w100p tbody tr td a", 
+                                     maximum=5, cleanFromHTML=True)
+    ASNumbers = checkValidASNumbers(ASNumbers)
     for ASN in ASNumbers:
-        inputFile = getIPsFromASN(domain, ASN, entryID, S_DIR)
-        allOutputFiles.append(inputFile)
-
-    # Check whether the IP is alive or not.
-    # ping -c 3 1.1.1.1
-    aliveIPsFromASNumbers = []
-    with open(inputFile, 'r') as file:
-        for ip in file:
-            cmd = 'ping -c {count} {IPAddress}'.format(count=PING_COUNT_NUMBER, IPAddress=ip)
-            output = os.system(cmd)
-            if ret != 0:
-                aliveIPsFromASNumbers.append(ip)
-    
-    # Write alive IPs into the output file.
-    outputFile = f'{S_DIR}{domain}-IPs-from-ASNs-alive-{entryID}.txt'
-    with open(outputFile, 'a') as file:
-        for IPAdress in aliveIPsFromASNumbers:
-            file.write(f'{IPAdress}\n')
-    allOutputFiles.append(outputFile)
-
-    return allOutputFiles
+        outputFile = getIPsFromASN(ASN, entryID, S_DIR)
+    return outputFile
 
 def checkExposedPorts(domain, entryID, S_DIR, includeASN=False):
     # Implemented: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e

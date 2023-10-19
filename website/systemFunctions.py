@@ -39,24 +39,24 @@ def getElementsByCSSPath(content, CSSPath, elementNumber=None, maximum=None, cle
         elements = soup.select(CSSPath)
         rawDescription = str(elements[elementNumber-1]) # `number-1` because the third element but we need to start from 0 in programming. So, third = 3-1 = 2.
         return rawDescription
-    else:
-        desiredElements = []
-        soup = bs4.BeautifulSoup(content, features='lxml')
-        elements = soup.select(CSSPath)
-        
-        if maximum == 'max':
-            maximum = len(elements)
-        elif maximum > len(elements):
-            maximum = len(elements)
+    
+    desiredElements = []
+    soup = bs4.BeautifulSoup(content, features='lxml')
+    elements = soup.select(CSSPath)
+    
+    if maximum == 'max':
+        maximum = len(elements)
+    elif maximum > len(elements):
+        maximum = len(elements)
 
-        for i in range(0, maximum): # Limit maximum number of ASN numbers -> can take a long time.
-            if '/AS' in str(elements[i]):
-                if cleanFromHTML:
-                    desiredElements.append(cleanTextFromHTML(str(elements[i])))
-                else:
-                    desiredElements.append(elements[i])
+    for i in range(0, maximum): # Limit maximum number of ASN numbers -> can take a long time.
+        if '/AS' in str(elements[i]):
+            if cleanFromHTML:
+                desiredElements.append(cleanTextFromHTML(str(elements[i])))
+            else:
+                desiredElements.append(elements[i])
 
-        return desiredElements
+    return desiredElements
 
 def cleanTextFromHTML(text):
     CLEAN = re.compile('<.*?>')
@@ -89,6 +89,15 @@ def getIPsFromAliveTargets(inputFile):
         ip = getIPAddress(domain)
         IPAdresses.append(ip)
     return IPAdresses
+
+def checkValidASNumbers(ASNumbers):
+    validASNumbers = []
+    for ASN in ASNumbers:
+        ASNDataContent = getContentsOfURL(str('https://bgp.he.net/'+ASN))
+        if 'Prefixes Originated (v4): 0' not in ASNDataContent:
+            if 'has not been visible in the global routing table since' not in ASNDataContent:
+                validASNumbers.append(ASN)
+    return validASNumbers
 
 def getASNFromIPs(IPAdresses):
     # Implemented this: https://www.team-cymru.com/ip-asn-mapping

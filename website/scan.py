@@ -59,7 +59,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             willIncludeASN = True
             # Function searchTargetsByASN() returns many files like - ['/file1.txt', '/file2.txt']
             # so we need to add each file separately.
-            outputFiles = searchTargetsByASN(domain, entryID, S_DIR, checkAlive=willCheckAliveSubdomains)
+            outputFiles = searchTargetsByASN(domain, entryID, S_DIR)
             for file in outputFiles:
                 addScanFileDB(entryID, file)
 
