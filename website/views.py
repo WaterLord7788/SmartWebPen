@@ -2,7 +2,7 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, DEBUG_ENABLED, MIN_N
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for, redirect
 from .check import checkForFolders      # Checking for necessary folders
 from .installation import installTools  # Checking for necessary tools
-from .models import User, Scan, Vulnerability
+from .models import User, Scan, Vulnerability, PortScan
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
 from os.path import join, dirname, realpath
@@ -67,11 +67,10 @@ def home():
             files.append(request.form.get('customWordlistForVulnerabilities'))
     
     # Convert list to string.
-    tools = str(tools).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-    methods = str(methods).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-    files = str(files).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-    resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
-    vulnerabilities = str(vulnerabilities).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+    tools = convertListToString(tools)
+    methods = convertListToString(methods)
+    files = convertListToString(files)
+    vulnerabilities = convertListToString(vulnerabilities)
     entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
     # Create scanning report entry in database.db.
@@ -91,8 +90,8 @@ def home():
         # Start executing commands in scan.py file.
         executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
     
-    flash(str('<b>Scanning started</b> for domain '+request.form.get('subdomain')+'!'), category='success')
-    flash(str('The following <b>tools</b> are going to be used: '+str(tools)+''), category='info')
+    flash(str(f'<b>Scanning started</b> for domain {domain}!'), category='success')
+    flash(str(f'The following <b>tools</b> are going to be used: {str(tools)}'), category='info')
     return render_template("base.html", user=current_user)
 
 
@@ -145,12 +144,42 @@ def vulnerabilities():
 @views.route('/ports', methods=['GET', 'POST'])
 @login_required
 def ports():
-    if request.method == 'GET': return render_template('ports.html', user=current_user)
+    if request.method == 'GET': 
+        ports = PortScan.query.all()
+        return render_template('ports.html', user=current_user, ports=ports)
+        return render_template('ports.html', user=current_user)
+    if not request.form.get('domain'): return render_template('ports.html', user=current_user, state="No domain")
 
-    if request.form.get('domain'):
-        pass
-    else:
-        return render_template('ports.html', user=current_user, state="No domain")
+    domain = request.form.get('domain')
+    domain = sanitizeInput(domain)
+    flags, resultFiles = [], []
+
+    if request.form.get('use-sV_flag'): flags.append('-sV')
+    if request.form.get('use-Pn_flag'): flags.append('-Pn')
+    if request.form.get('use-A_flag'):  flags.append('-A')
+    if request.form.get('use-sO_flag'): flags.append('-sO')
+    if request.form.get('use-sC_flag'): flags.append('-sC')
+    if request.form.get('use--privileged_flag'): flags.append('--privileged')
+
+    if request.form.get('getHTMLReport'): HTMLReport = True
+    else: HTMLReport = False
+
+    # Convert list to string.
+    flags = convertListToString(flags)
+    resultFiles = convertListToString(resultFiles)
+    entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
+
+    # Create scanning report entry in database.db.
+    NEW_PORTSCAN = PortScan(url=domain, flags=flags, resultFiles=resultFiles, entryID=entryID)
+    db.session.add(NEW_PORTSCAN)
+    saveDB()
+
+    # Start executing commands in scan.py file.
+    executePortScanning(domain, flags, HTMLReport, entryID)
+
+    flash(str(f'<b>Port scanning started</b> for domain {domain}!'), category='success')
+    flash(str(f'The following <b>flags</b> are going to be used: {str(flags)}'), category='info')
+    return render_template("base.html", user=current_user)
 
 
 @views.route('/subdomains/<int:entryID>/', methods=['GET', 'POST'])
@@ -230,7 +259,7 @@ def getFile():
 @views.route('/delete-scan', methods=['POST'])
 @login_required
 def deleteScan():
-    scan = json.loads(request.data) # This function expects a JSON from the INDEX.js file.
+    scan = json.loads(request.data)
     scanId = scan['scanId']
     scan = Scan.query.get(scanId)
     resultFiles = scan.resultFiles.split(' ')
@@ -252,7 +281,7 @@ def deleteScan():
 @views.route('/delete-vulnerability', methods=['POST'])
 @login_required
 def deleteVulnerability():
-    vulnerability = json.loads(request.data) # This function expects a JSON from the INDEX.js file.
+    vulnerability = json.loads(request.data)
     vulnId = vulnerability['vulnId']
     vulnerability = Vulnerability.query.get(vulnId)
     resultFiles = vulnerability.resultFiles.split(' ')
@@ -264,8 +293,30 @@ def deleteVulnerability():
             # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
             try: os.rmdir(os.path.dirname(resultFile))
             except: pass
-    if scan:
+    if vulnerability:
         db.session.delete(vulnerability)
         db.session.commit()
         flash('Vulnerability scan deleted!', category='success')
+    return jsonify({})
+
+
+@views.route('/delete-port', methods=['POST'])
+@login_required
+def deletePortScan():
+    portscan = json.loads(request.data)
+    portId = portscan['portId']
+    portscan = PortScan.query.get(portId)
+    resultFiles = portscan.resultFiles.split(' ')
+    for resultFile in resultFiles:
+        if len(resultFile) != 0:
+            # If there are no files, we just ignore the error, hence we use try...except clause.
+            try: s.remove(resultFile)
+            except: pass
+            # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
+            try: os.rmdir(os.path.dirname(resultFile))
+            except: pass
+    if portscan:
+        db.session.delete(portscan)
+        db.session.commit()
+        flash('Port scan deleted!', category='success')
     return jsonify({})

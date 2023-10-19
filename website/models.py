@@ -13,6 +13,8 @@ class User(db.Model, UserMixin):
     phone = db.Column(db.String(50))
 
     scans = db.relationship('Scan')
+    vulns = db.relationship('Vulnerability')
+    ports = db.relationship('PortScan')
     
 
 class Scan(db.Model, UserMixin):
@@ -33,5 +35,16 @@ class Vulnerability(db.Model, UserMixin):
     resultFiles = db.Column(db.String(1000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    vulnerabilities = db.Column(db.String(200))
+    vulnerabilities = db.Column(db.String(1000))
+    entryID = db.Column(db.String(50))
+
+
+class PortScan(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(500))
+    flags = db.Column(db.String(1000))
+    resultFiles = db.Column(db.String(5000))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    ports = db.Column(db.String(1000))
     entryID = db.Column(db.String(50))

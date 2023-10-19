@@ -108,6 +108,16 @@ def installTools():
         os.popen('apt install prips')
         print('[+] Done installing prips!'); print()
 
+    com_str = 'which sn1per'
+    command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
+    (output, error) = command.communicate()
+    if 'sn1per' not in str(output):
+        # Installing dnsx
+        print('[-] Sn1per not present')
+        print('[*] Installing sn1per')
+        #os.popen('apt install prips')
+        print('[+] Done installing prips!'); print()
+
 
 # If `installation.py` is run as main script, execute installation function installTools().
 if __name__ == '__main__':

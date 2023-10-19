@@ -134,3 +134,7 @@ def sanitizeInput(string):
     for character in dangerousCharacters:
         safeString = semiSafeString.replace(character, '')
     return safeString
+
+def convertListToString(string):
+    string = str(string).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
+    return string

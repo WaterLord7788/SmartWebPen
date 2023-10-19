@@ -124,3 +124,22 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
     print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Vulnerability scanning completed! Check logs in {V_DIR}')
     saveDB()
+
+
+def executePortScanning(domain, flags, HTMLReport, entryID):
+    print(); print(f'[*] Starting port scanning against {str(domain)}!')
+    print(f'[*] Using the following flags   : {str(flags)}')
+
+    P_DIR = PORT_SCAN_OUTPUT_DIRECTORY     # To make code less confusing. Less text = more understandable.
+    P_DIR = P_DIR + entryID + '/'          # Example: /root/Desktop/SmartWebPen/website/generated/ports/<entryID>/
+    executeCMD(f'mkdir {P_DIR}')           # Create a folder, in case it being missing.
+
+    outputFiles = nmap(domain, entryID, P_DIR, flags, HTMLReport=HTMLReport)
+    for file in outputFiles:
+        addPortScanFileDB(entryID, file)
+
+    cleanResultFilesDB(type='PortScan', entryID=entryID)
+    resultFiles = getResultFilesDB(type='PortScan', entryID=entryID)
+    print(f'[+] Resulting files created     : {str(resultFiles)}')
+    print(f'[+] Port scanning completed! Check logs in {P_DIR}')
+    saveDB()

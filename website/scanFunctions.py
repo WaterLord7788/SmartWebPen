@@ -171,3 +171,24 @@ def generateWordlist(domain, entryID, S_DIR, wordlist):
             for word in uniqueSubdomains:
                 file.write(f'{word}\n')
         return outputFile
+
+def nmap(domain, entryID, P_DIR, flags, HTMLReport):
+    allOutputFiles =  []
+
+    XMLOutputFile = f'{P_DIR}{domain}-nmap-{entryID}.xml'
+    HTMLOutputFile = f'{P_DIR}{domain}-nmap-{entryID}.html'
+    TXTOutputFile = f'{P_DIR}{domain}-nmap-{entryID}.txt'
+
+    allOutputFiles.append(XMLOutputFile)
+    allOutputFiles.append(HTMLOutputFile)
+
+    if HTMLReport:
+        cmd = f'nmap {flags} {domain} -oX {XMLOutputFile} | tee {TXTOutputFile} && xsltproc {XMLOutputFile} | tee {HTMLOutputFile}'
+        print(cmd)
+        executeCMD(cmd)
+        return allOutputFiles
+    
+    cmd = f'nmap {flags} {domain} -oX {XMLOutputFile} | tee {TXTOutputFile}'
+    print(cmd)
+    executeCMD(cmd)
+    return allOutputFiles

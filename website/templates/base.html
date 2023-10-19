@@ -27,7 +27,7 @@
             <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="home" href="/"><b>Home</b></a></li>
             <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="subdomains" href="/subdomains"><b>Subdomains</b></a></li>
             <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="vulnerabilities" href="/vulnerabilities"><b>Vulnerabilities</b></a></li>
-            <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="ports" href="/ports"><b>Ports</b></a></li>
+            <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="ports" href="/ports"><b>Ports scanning</b></a></li>
             <!--<li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="logout" href="/profile">Profile</a></li>-->
           {% else %}
             <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="login" href="/login"><b>Login</b></a></li>
@@ -108,6 +108,24 @@
       body: JSON.stringify({ scanId: scanId }),
     }).then((_res) => {
       window.location.href = "/subdomains";
+    });
+  }
+
+  function deleteVulnerability(vulnId){
+    fetch("/delete-vulnerability", {
+      method: "POST",
+      body: JSON.stringify({ vulnId: vulnId }),
+    }).then((_res) => {
+      window.location.href = "/vulnerabilities";
+    });
+  }
+
+  function deletePort(portId){
+    fetch("/delete-port", {
+      method: "POST",
+      body: JSON.stringify({ portId: portId }),
+    }).then((_res) => {
+      window.location.href = "/ports";
     });
   }
   </script>
