@@ -24,4 +24,4 @@ def checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY,
         os.system('mkdir '+VULNERABILITY_SCAN_OUTPUT_DIRECTORY+'')
 
     # Check required dependencies
-    # TODO
+    # To Do

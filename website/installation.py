@@ -72,9 +72,11 @@ def installTools():
         print('[*] Installing gf')
         os.popen('go install -v github.com/tomnomnom/gf@latest')
         print('[+] Done installing gf!'); print()
+    if os.path.isdir('.gf/') == False:
+        print('[-] Gf patterns not present')
         print('[*] Downloading gf patterns')
         os.popen('git clone https://github.com/1ndianl33t/Gf-Patterns && mkdir .gf && mv Gf-Patterns/*.json .gf/ ; rm -r Gf-Patterns/')
-        print('[+] Done downloading gf patterns!')
+        print('[+] Done downloading gf patterns!'); print()
 
     com_str = 'which dnsx'
     command = subprocess.Popen([com_str], stdout=subprocess.PIPE, shell=True)
@@ -105,3 +107,8 @@ def installTools():
         print('[*] Installing prips')
         os.popen('apt install prips')
         print('[+] Done installing prips!'); print()
+
+
+# If `installation.py` is run as main script, execute installation function installTools().
+if __name__ == '__main__':
+    installTools()

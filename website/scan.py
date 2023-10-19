@@ -59,7 +59,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
             willIncludeASN = True
             # Function searchTargetsByASN() returns many files like - ['/file1.txt', '/file2.txt']
             # so we need to add each file separately.
-            outputFiles = searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains)
+            outputFiles = searchTargetsByASN(domain, entryID, S_DIR, checkAlive=willCheckAliveSubdomains)
             for file in outputFiles:
                 addScanFileDB(entryID, file)
 
@@ -83,7 +83,8 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
     for file in files.split():
         print(f'[*] Using file                  : {file}')
 
-    cleanResultFiles(type='Scan', entryID=entryID)
+    cleanResultFilesDB(type='Scan', entryID=entryID)
+    resultFiles = getResultFilesDB(type='Scan', entryID=entryID)
     print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Subdomain scanning completed! Check logs in {S_DIR}')
     saveDB()
@@ -118,7 +119,8 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
         elif vulnerability == 'Github':
             addVulnFileDB(entryID, github(domain, entryID, S_DIR, V_DIR))
 
-    cleanResultFiles(type='Vulnerability', entryID=entryID)
+    cleanResultFilesDB(type='Vulnerability', entryID=entryID)
+    resultFiles = getResultFilesDB(type='Vulnerability', entryID=entryID)
     print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Vulnerability scanning completed! Check logs in {V_DIR}')
     saveDB()

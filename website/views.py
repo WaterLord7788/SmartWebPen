@@ -22,7 +22,6 @@ import os
 views = Blueprint('views', __name__)
 
 
-
 @views.before_app_first_request
 def setup():
     print('[!] Setup checking.')
@@ -166,34 +165,35 @@ def getSubdomainScanDetails(entryID):
     if len(resultFiles) < 4:
         flash(str('No resulting files of scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
         flash('You might need to wait for the scan to finish.', category='info')
-    else:
-        # Real work starts here.
-        # Code below fetches all the resulting files from the scan,
-        # and outputs the results into an HTML box in id.subdomains.html file.
-        resultFiles = resultFiles.split(' ')
-        resultFiles.pop(0)
-        files = {}
+        return render_template('id.subdomains.html', user=current_user)
+    
+    # Real work starts here.
+    # Code below fetches all the resulting files from the scan,
+    # and outputs the results into an HTML box in `id.subdomains.html` file.
+    resultFiles = resultFiles.split(' ')
+    resultFiles.pop(0)
+    files = {}
 
-        for resultFile in resultFiles:
-            file = ''
-            print(resultFile)
-            if 'subdomains/' in resultFile:     # If file is in subdomains/ folder.
-                with open(resultFile) as f:
-                    for line in f:
-                        line = line.strip()
-                        line = '<a/href="../../redirect?url='+line+'"/target="_blank">'+line+'</a>'
-                        line += '<br>'
-                        file += line
-                files[resultFile] = file
-            elif 'waybackurls+' in resultFile:  # If file has more than just subdomains.
-                with open(resultFile) as f:
-                    for line in f:
-                        line = line.strip()
-                        line += '<br>'
-                        file += line
-                files[resultFile] = file
+    for resultFile in resultFiles:
+        file = ''
+        print(resultFile)
+        if '/subdomains/' in resultFile:     # If file is in subdomains/ folder.
+            with open(resultFile, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    line = '<a/href="../../redirect?url='+line+'"/target="_blank">'+line+'</a>'
+                    line += '<br>'
+                    file += line
+            files[resultFile] = file
+        elif 'waybackurls+' in resultFile:  # If file has more than just subdomains.
+            with open(resultFile, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    line += '<br>'
+                    file += line
+            files[resultFile] = file
 
-        return render_template('id.subdomains.html', files=files, user=current_user)
+    return render_template('id.subdomains.html', files=files, user=current_user)
 
 
 @views.route('/ports/<int:id>/', methods=['GET', 'POST'])
@@ -236,19 +236,36 @@ def deleteScan():
     resultFiles = scan.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            # If there is no files, we just ignore the error, hence we use try...except clause.
-            try:
-                os.remove(resultFile)
-            except:
-                pass
-
-            # `os.rmdir` deletes only empty folder, so we need to do this every time we delete a file.
-            try:
-                os.rmdir(os.path.dirname(resultFile))
-            except:
-                pass
+            # If there are no files, we just ignore the error, hence we use try...except clause.
+            try: os.remove(resultFile)
+            except: pass
+            # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
+            try: os.rmdir(os.path.dirname(resultFile))
+            except: pass
     if scan:
         db.session.delete(scan)
         db.session.commit()
         flash('Scan deleted!', category='success')
+    return jsonify({})
+
+
+@views.route('/delete-vulnerability', methods=['POST'])
+@login_required
+def deleteVulnerability():
+    vulnerability = json.loads(request.data) # This function expects a JSON from the INDEX.js file.
+    vulnId = vulnerability['vulnId']
+    vulnerability = Vulnerability.query.get(vulnId)
+    resultFiles = vulnerability.resultFiles.split(' ')
+    for resultFile in resultFiles:
+        if len(resultFile) != 0:
+            # If there are no files, we just ignore the error, hence we use try...except clause.
+            try: s.remove(resultFile)
+            except: pass
+            # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
+            try: os.rmdir(os.path.dirname(resultFile))
+            except: pass
+    if scan:
+        db.session.delete(vulnerability)
+        db.session.commit()
+        flash('Vulnerability scan deleted!', category='success')
     return jsonify({})

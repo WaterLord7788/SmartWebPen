@@ -180,7 +180,7 @@
               </tr>
             </tbody>
           </table>
-          <table>
+          <table style="width: 100%; margin-top: 2%;">
             <tbody>
               <tr>
                 <th>
@@ -224,7 +224,8 @@
     </div>
 </div>
 
-<!-- Set elements' with ID of `vulnCheckDefault` and `wordlist` disabled value to true -->
+<!-- Set elements' with ID of `vulnCheckDefault` and `wordlist` disabled value to true or false
+     based on the function of the element. -->
 <script>
   // Disable elements.
   var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);
@@ -233,9 +234,10 @@
     elms[i].disabled = true;
   }
 
-  // Disable elements.
+  // Disable or enable elements.
   document.getElementById('wordlist').disabled = true;
   document.getElementById('searchTargetsByASN').disabled = true;
+  document.getElementById('createWordlists').disabled = false;
 
   // Disable elements.
   var elms = document.querySelectorAll(`[id='wordlistItems']`);

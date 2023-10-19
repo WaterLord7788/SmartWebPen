@@ -64,12 +64,13 @@ def cleanTextFromHTML(text):
     return cleanText
 
 def getIPsFromASN(domain, ASN, entryID, S_DIR):
-    outputFile = str(''+S_DIR+''+domain+'-IPs-from-ASNs-'+entryID+'.txt')
+    outputFile = f'{S_DIR}{domain}-IPs-from-ASNs-{entryID}.txt'
     cmd = """
     #!/bin/bash
     # one-liner to convert ASN to ip addresses. Results will be appended to `ips.out`. sander@cedsys.nl | 1-7-2017
     # requires: apt-get install prips
 
+    touch """+outputFile+"""
     for asn in """+ASN+"""; #AS30548 - for Aruba;
         do $(for range in $(echo $(whois -h whois.radb.net -- "-i origin $asn" | grep -Eo "([0-9.]+){4}/[0-9]+") | sed ':a;N;$!ba;s/\\n/ /g'); 
             do prips $range >> """+outputFile+"""; 
@@ -82,16 +83,18 @@ def getIPsFromASN(domain, ASN, entryID, S_DIR):
 def getIPsFromAliveTargets(inputFile):
     IPAdresses = []
     with open(str(inputFile), 'r') as file:
-        for domain in file:
-            ip = getIPAddress(domain)
-            IPAdresses.append(ip)
+        domains = list(set(file.readlines()))
+    for domain in domains:
+        domain = domain.replace('https://', '').replace('http://', '').replace(' ', '')
+        ip = getIPAddress(domain)
+        IPAdresses.append(ip)
     return IPAdresses
 
 def getASNFromIPs(IPAdresses):
     # Implemented this: https://www.team-cymru.com/ip-asn-mapping
     ASNumbers = []
     for ip in IPAdresses:
-        cmd = str('whois -h whois.cymru.com " -v '+ip+'"')
+        cmd = f'whois -h whois.cymru.com " -v {str(ip)}"'
         output = executeCMD(cmd)
         output = output.split('\n')
 
@@ -106,6 +109,7 @@ def getASNFromIPs(IPAdresses):
 
         ASNumber = cleanedData[0]
         ASNumbers.append(ASNumber)
+    ASNumbers = list(set(ASNumbers))
     return ASNumbers
 
 def generateSubdomainWordlist(inputFile):

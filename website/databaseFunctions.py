@@ -9,7 +9,7 @@ def addVulnFileDB(entryID, file):
     Vulnerability.query.filter_by(entryID=entryID).first().resultFiles = str(Vulnerability.query.filter_by(entryID=entryID).first().resultFiles) + ' ' + str(file)
     db.session.commit()
 
-def cleanResultFiles(type, entryID):
+def cleanResultFilesDB(type, entryID):
     if type == 'Scan':
         resultFiles = Scan.query.filter_by(entryID=entryID).first().resultFiles
         resultFiles = str(resultFiles).replace('[', '').replace(']', '').replace(',', '').replace("'", '')
@@ -22,3 +22,11 @@ def cleanResultFiles(type, entryID):
 
 def saveDB():
     db.session.commit()
+
+def getResultFilesDB(type, entryID):
+    if type == 'Scan':
+        resultFiles = Scan.query.filter_by(entryID=entryID).first().resultFiles
+        return resultFiles
+    elif type == 'Vulnerability':
+        resultFiles = Vulnerability.query.filter_by(entryID=entryID).first().resultFiles
+        return resultFiles

@@ -1,5 +1,6 @@
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
 from os.path import join, dirname, realpath
+from . import PING_COUNT_NUMBER
 from .systemFunctions import *
 import requests
 import asyncio
@@ -60,8 +61,8 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
     #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --threads '+threads+' --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d '+V_DIR)
     return
 
-def searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains):
-    if willCheckAliveSubdomains == False: return None
+def searchTargetsByASN(domain, entryID, S_DIR, checkAlive):
+    if checkAlive == False: return None
     allOutputFiles = []
 
     # Get IPs of alive targets.
@@ -79,9 +80,9 @@ def searchTargetsByASN(domain, entryID, S_DIR, willCheckAliveSubdomains):
     # Check whether the IP is alive or not.
     # ping -c 3 1.1.1.1
     aliveIPsFromASNumbers = []
-    with open(inputFile) as file:
+    with open(inputFile, 'r') as file:
         for ip in file:
-            cmd = 'ping -c {count} {IPAddress}'.format(count=1, IPAddress=ip)
+            cmd = 'ping -c {count} {IPAddress}'.format(count=PING_COUNT_NUMBER, IPAddress=ip)
             output = os.system(cmd)
             if ret != 0:
                 aliveIPsFromASNumbers.append(ip)
