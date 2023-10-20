@@ -63,26 +63,32 @@ def checkAliveSubdomains(domain, entryID, S_DIR, stage):
 
 
 def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads, delay):
-    date = datetime.date.today().year
-    outputDirectory = f'{S_DIR}'
+    allOutputFiles = []
+    date = datetime.date.today()
     domains = f'{S_DIR}{domain}-alive-{entryID}.txt'
-    screenshotsDirectory = f'{S_DIR}{domain}-screenshots/'
-    eyewitnessCmd = f'eyewitness -f {domains} --threads {threads} --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d {outputDirectory}'
+    reportDirectory = f'{S_DIR}{domain}-report/'
+    screenshotsDirectory = f'{S_DIR}{domain}-report/screens/'
+    eyewitnessCmd = f'eyewitness -f {domains} --threads {threads} --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null'
 
     cmd = f"""
+    mkdir {reportDirectory}
     mkdir {screenshotsDirectory}
-    eval {eyewitnessCmd}
-    mv {date}*/screens/* {screenshotsDirectory}
+    {eyewitnessCmd}
+    mv {date}*/screens/*.png {screenshotsDirectory}
+    mv {date}*/report*.html {reportDirectory}
     rm {date}*/ -r
+    rm geckodriver.log
     """.format(
         screenshotsDirectory=screenshotsDirectory,
+        reportDirectory=reportDirectory,
         eyewitnessCmd=eyewitnessCmd,
         date=date
     )
     executeCMD(cmd)
-    
-    outputFile = screenshotsDirectory
-    return outputFile
+
+    allOutputFiles.append(screenshotsDirectory)
+    allOutputFiles.append(reportDirectory)
+    return allOutputFiles
 
 
 def searchTargetsByASN(domain, entryID, S_DIR):

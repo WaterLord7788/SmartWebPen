@@ -154,3 +154,5 @@ test.py
 */__pycache__/
 resume.cfg
 errors.txt
+20*/
+geckodriver.log

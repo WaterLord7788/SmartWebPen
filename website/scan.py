@@ -64,7 +64,9 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
                 addScanFileDB(entryID, file)
 
         elif method == 'useScreenshotting':
-            addScanFileDB(entryID, useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5, delay=SCREENSHOT_DELAY_SECONDS))
+            outputFiles = useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5, delay=SCREENSHOT_DELAY_SECONDS)
+            for file in outputFiles:
+                addScanFileDB(entryID, file)
 
         elif method == 'checkExposedPorts':
             addScanFileDB(entryID, checkExposedPorts(domain, entryID, S_DIR, includeASN=willIncludeASN))
