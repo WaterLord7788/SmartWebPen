@@ -267,11 +267,11 @@ def deleteScan():
     scan = json.loads(request.data)
     scanId = scan['scanId']
     scan = Scan.query.get(scanId)
-    resultFiles = scan.resultFiles.split(' ')
-    for resultFile in resultFiles:
-        if len(resultFile) != 0:
-            try: os.rmdir(resultFile)
-            except: executeCMD(f'rm -r {resultFile}')
+    entryID = scan.entryID
+
+    cmd = f'rm -r {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/'
+    executeCMD(cmd)
+
     if scan:
         db.session.delete(scan)
         db.session.commit()
@@ -285,11 +285,11 @@ def deleteVulnerability():
     vulnerability = json.loads(request.data)
     vulnId = vulnerability['vulnId']
     vulnerability = Vulnerability.query.get(vulnId)
-    resultFiles = vulnerability.resultFiles.split(' ')
-    for resultFile in resultFiles:
-        if len(resultFile) != 0:
-            try: os.rmdir(resultFile)
-            except: executeCMD(f'rm -r {resultFile}')
+    entryID = vulnerability.entryID
+    
+    cmd = f'rm -r {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/'
+    executeCMD(cmd)
+
     if vulnerability:
         db.session.delete(vulnerability)
         db.session.commit()
@@ -303,11 +303,11 @@ def deletePortScan():
     portscan = json.loads(request.data)
     portId = portscan['portId']
     portscan = PortScan.query.get(portId)
-    resultFiles = portscan.resultFiles.split(' ')
-    for resultFile in resultFiles:
-        if len(resultFile) != 0:
-            try: os.rmdir(resultFile)
-            except: executeCMD(f'rm -r {resultFile}')
+    entryID = portscan.entryID
+    
+    cmd = f'rm -r {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/'
+    executeCMD(cmd)
+
     if portscan:
         db.session.delete(portscan)
         db.session.commit()
