@@ -50,15 +50,18 @@ def crtsh(domain, entryID, S_DIR):
     return outputFile
 
 
-def checkAliveSubdomains(domain, entryID, S_DIR, stage):
-    if stage == 'minimalDetails':
+def checkAliveSubdomains(domain, entryID, S_DIR, moreDetails):
+    if moreDetails == False:
         outputFile = f'{S_DIR}{domain}-alive-{entryID}.txt'
         cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | httpx -no-color -silent | sort -u | tee {outputFile}'
         executeCMD(cmd)
-    elif stage == 'additionalDetails':
+
+    else:
         outputFile = f'{S_DIR}{domain}-alive+stats-{entryID}.txt'
-        cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | httpx -title -cl -sc -tech-detect -fr -server -no-color -silent | sort -u | tee {outputFile}'
+        flags = '-title -cl -sc -tech-detect -web-server -fr -server -no-color -silent -web-server -asn -threads 50'
+        cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | httpx {flags} | sort -u | tee {outputFile}'
         executeCMD(cmd)
+
     return outputFile
 
 

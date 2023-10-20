@@ -13,7 +13,7 @@ from threading import Thread
 from pathlib2 import Path
 from .scan import *
 import requests
-import asyncio # For asynchronous completion of system commands
+import asyncio
 import random
 import json
 import os
@@ -26,7 +26,6 @@ views = Blueprint('views', __name__)
 def setup():
     print('[!] Setup checking.')
     checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
-    installTools()
     print('[+] Setup checking completed!')
 
 
@@ -36,10 +35,8 @@ def home():
     if request.method == 'GET':           return render_template('home.html', user=current_user, ADMIN=ADMIN)
     if not request.form.get('subdomain'): return render_template('home.html', user=current_user, state="No subdomain", ADMIN=ADMIN)
 
-    # Subdomain sanitization.
     domain = request.form.get('subdomain')
     domain = sanitizeInput(domain)
-    # Get the required options.
     tools, methods, files, resultFiles, vulnerabilities = [], [], [], [], []
 
     if request.form.get('useAMASS'):             tools.append('amass')
@@ -47,6 +44,7 @@ def home():
     if request.form.get('useGau'):               tools.append('gau')
     if request.form.get('useWaybackurls'):       tools.append('waybackurls')
     if request.form.get('useCrt.sh'):            tools.append('crt.sh')
+    if request.form.get('useWaymore'):           tools.append('waymore')
     if request.form.get('useCustomWordlistForSubdomains'): 
         methods.append('customWordlistForSubdomains')
         files.append(request.form.get('customWordlistForSubdomains'))

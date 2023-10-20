@@ -35,7 +35,7 @@
                 <th>
                   <input type="checkbox" value="true" name="useAMASS" id="flexCheckDefault">
                   <label for="flexCheckDefault">
-                    Use <b>AMASS</b>
+                    Use <b>AMASS</b> <i>(slow)</i>
                   </label>
                 </th>
                 <th>
@@ -60,7 +60,7 @@
               <tr>
                 <th>
                   <input id="reactiveTickbox" type="checkbox" value="true" name="useCustomWordlist" id="flexCheckDefault"
-                      onclick="if(document.getElementById('wordlist').disabled == true){document.getElementById('wordlist').disabled = false}else{document.getElementById('wordlist').disabled = true};">
+                      onclick="if(document.getElementById('wordlist').disabled == true){document.getElementById('wordlist').disabled=false}else{document.getElementById('wordlist').disabled = true};">
                   <label for="flexCheckDefault">
                     Use custom <b>WORDLIST</b>
                   </label>
@@ -68,16 +68,16 @@
 
                 <th>
                   <input type="checkbox" value="true" name="useAliveCheck" id="flexCheckDefault"
-                      onclick="if(document.getElementById('searchTargetsByASN').disabled == true){document.getElementById('searchTargetsByASN').disabled = false}else{document.getElementById('searchTargetsByASN').disabled = true};">
+                      onclick="if(document.getElementById('searchTargetsByASN').disabled==true){document.getElementById('searchTargetsByASN').disabled=false;document.getElementById('screenshotAliveDomains').disabled=false}else{document.getElementById('searchTargetsByASN').disabled=true;document.getElementById('screenshotAliveDomains').disabled=true};">
                   <label for="flexCheckDefault">
                     Scan for <b>alive</b> domains
                   </label>
                 </th>
 
                 <th>
-                  <input type="checkbox" value="true" name="useScreenshotting" id="flexCheckDefault">
+                  <input type="checkbox" value="true" name="exposedPorts" id="flexCheckDefault">
                   <label for="flexCheckDefault">
-                    Screenshot <b>alive</b> domains
+                    <b>Exposed Ports</b>
                   </label>
                 </th>
 
@@ -94,9 +94,9 @@
                   value="/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt" name="useCustomWordlistForSubdomains" disabled="true">
                 </th>
                 <th>
-                  <input type="checkbox" value="true" name="searchTargetsByASN" id="searchTargetsByASN">
+                  <input type="checkbox" value="true" name="useScreenshotting" id="screenshotAliveDomains">
                   <label for="flexCheckDefault">
-                    <b>ASN Search</b>
+                    Screenshot <b>domains</b> <i>(slow)</i>
                   </label>
                 </th>
                 <th>
@@ -106,11 +106,22 @@
                   </label>
                 </th>
                 <th>
-                  <input type="checkbox" value="true" name="exposedPorts" id="flexCheckDefault">
+                  <input type="checkbox" value="true" name="useWaymore" id="flexCheckDefault">
                   <label for="flexCheckDefault">
-                    <b>Exposed Ports</b>
+                    <b>Use Waymore</b> <i>(slow)</i>
                   </label>
                 </th>
+              </tr>
+              <tr>
+                <th></th>
+                <th>
+                  <input type="checkbox" value="true" name="searchTargetsByASN" id="searchTargetsByASN">
+                  <label for="flexCheckDefault">
+                    <b>ASN Search</b>
+                  </label>
+                </th>
+                <th></th>
+                <th></th>
               </tr>
             </tbody>
           </table>
@@ -190,12 +201,9 @@
                     <b>Create unique wordlists</b>
                   </label>
                 </th>
-                <th>
-                </th>
-                <th>
-                </th>
-                <th>
-                </th>
+                <th></th>
+                <th></th>
+                <th></th>
                 <th style="width: 40%">
                 </th>
               </tr>
@@ -238,6 +246,7 @@
   document.getElementById('wordlist').disabled = true;
   document.getElementById('searchTargetsByASN').disabled = true;
   document.getElementById('createWordlists').disabled = false;
+  document.getElementById('screenshotAliveDomains').disabled = true;
 
   // Disable elements.
   var elms = document.querySelectorAll(`[id='wordlistItems']`);

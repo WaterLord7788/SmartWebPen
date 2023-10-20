@@ -52,8 +52,8 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
         if method == 'checkAliveSubdomains':
             willCheckAliveSubdomains = True
-            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, stage='minimalDetails'))
-            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, stage='additionalDetails'))
+            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, moreDetails=False))
+            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, moreDetails=True))
 
         if method == 'searchTargetsByASN':
             willIncludeASN = True
