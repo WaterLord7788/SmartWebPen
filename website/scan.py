@@ -1,4 +1,4 @@
-from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
+from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY, SCREENSHOT_DELAY_SECONDS
 from flask import Blueprint, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
@@ -64,7 +64,7 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
                 addScanFileDB(entryID, file)
 
         elif method == 'useScreenshotting':
-            addScanFileDB(entryID, useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5))
+            addScanFileDB(entryID, useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5, delay=SCREENSHOT_DELAY_SECONDS))
 
         elif method == 'checkExposedPorts':
             addScanFileDB(entryID, checkExposedPorts(domain, entryID, S_DIR, includeASN=willIncludeASN))

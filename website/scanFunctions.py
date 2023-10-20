@@ -2,11 +2,13 @@ from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENER
 from os.path import join, dirname, realpath
 from . import PING_COUNT_NUMBER
 from .systemFunctions import *
+import datetime
 import requests
 import asyncio
 import random
 import json
 import os
+
 
 def amass(domain, entryID, S_DIR):
     outputFile = f'{S_DIR}{domain}-amass-{entryID}.txt'
@@ -14,17 +16,20 @@ def amass(domain, entryID, S_DIR):
     executeCMD(cmd)
     return outputFile
 
+
 def subfinder(domain, entryID, S_DIR):
     outputFile = f'{S_DIR}{domain}-subfinder-{entryID}.txt'
     cmd = f'subfinder -all -d {domain} -o {outputFile} -rl 10 -silent'
     executeCMD(cmd)
     return outputFile
 
+
 def gau(domain, entryID, S_DIR):
     outputFile = f'{S_DIR}{domain}-gau-{entryID}.txt'
     cmd = f'printf {domain} | gau --subs --blacklist png,jpg,css,js | unfurl domains | sort -u | tee {outputFile}'
     executeCMD(cmd)
     return outputFile
+
 
 def waybackurls(domain, entryID, S_DIR, stage):
     if stage == 'onlySubdomains':
@@ -37,11 +42,13 @@ def waybackurls(domain, entryID, S_DIR, stage):
         executeCMD(cmd)
     return outputFile
 
+
 def crtsh(domain, entryID, S_DIR):
     outputFile = f'{S_DIR}{domain}-crt.sh-{entryID}.txt'
     cmd = f"curl -s 'https://crt.sh/?q={domain}&output=json' | jq -r '.[].common_name' | sed 's/\*//g' | sort -u | tee {outputFile}"
     executeCMD(cmd);  
     return outputFile
+
 
 def checkAliveSubdomains(domain, entryID, S_DIR, stage):
     if stage == 'minimalDetails':
@@ -54,12 +61,29 @@ def checkAliveSubdomains(domain, entryID, S_DIR, stage):
         executeCMD(cmd)
     return outputFile
 
-def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads):
-    # To Do's:
-    # After completing system calls, it should move all captured images
-    # into a specific folder under subdomains.
-    #cmd = str('eyewitness -f '+S_DIR+''+domain+'-alive-'+entryID+'.txt --threads '+threads+' --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d '+V_DIR)
-    return
+
+def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads, delay):
+    date = datetime.date.today().year
+    outputDirectory = f'{S_DIR}'
+    domains = f'{S_DIR}{domain}-alive-{entryID}.txt'
+    screenshotsDirectory = f'{S_DIR}{domain}-screenshots/'
+    eyewitnessCmd = f'eyewitness -f {domains} --threads {threads} --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null -d {outputDirectory}'
+
+    cmd = f"""
+    mkdir {screenshotsDirectory}
+    eval {eyewitnessCmd}
+    mv {date}*/screens/* {screenshotsDirectory}
+    rm {date}*/ -r
+    """.format(
+        screenshotsDirectory=screenshotsDirectory,
+        eyewitnessCmd=eyewitnessCmd,
+        date=date
+    )
+    executeCMD(cmd)
+    
+    outputFile = screenshotsDirectory
+    return outputFile
+
 
 def searchTargetsByASN(domain, entryID, S_DIR):
     ip = getIPAddress(domain)
@@ -73,8 +97,9 @@ def searchTargetsByASN(domain, entryID, S_DIR):
                                      maximum=5, cleanFromHTML=True)
     ASNumbers = checkValidASNumbers(ASNumbers)
     for ASN in ASNumbers:
-        outputFile = getIPsFromASN(ASN, entryID, S_DIR)
+        outputFile = getIPsFromASN(domain, ASN, entryID, S_DIR)
     return outputFile
+
 
 def checkExposedPorts(domain, entryID, S_DIR, includeASN=False):
     # Implemented: https://m7arm4n.medium.com/default-credentials-on-sony-swag-time-8e35681ad39e
@@ -99,11 +124,13 @@ def checkExposedPorts(domain, entryID, S_DIR, includeASN=False):
 
     return outputFile
     
+
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = f'{S_DIR}{domain}-params-{sensitiveVulnerabilityType}-{entryID}.txt'
     cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | sort -u | gf {sensitiveVulnerabilityType} | tee -a {outputFile}'
     executeCMD(cmd)
     return outputFile
+
 
 def interestingSubsAlive(domain, entryID, S_DIR):
     outputFile = f'{S_DIR}{domain}-params-interestingsubs-alive-{entryID}.txt'
@@ -111,11 +138,14 @@ def interestingSubsAlive(domain, entryID, S_DIR):
     executeCMD(cmd)
     return outputFile
 
+
 def noncommonResponseCodes(domain, entryID, S_DIR, V_DIR):
     return
 
+
 def sensitiveKeywords(domain, entryID, S_DIR, V_DIR):
     return
+
 
 def CRLF(domain, entryID, S_DIR, V_DIR):
     outputFile = f'{V_DIR}{domain}-crlf-{entryID}.txt'
@@ -123,11 +153,13 @@ def CRLF(domain, entryID, S_DIR, V_DIR):
     executeCMD(cmd)
     return outputFile
 
+
 def XSS(domain, entryID, S_DIR, V_DIR):
     outputFile = f'{V_DIR}{domain}-xss-{entryID}.txt'
     cmd = f'dalfox file {S_DIR}{domain}-alive-{entryID}.txt --only-poc="g,r,v" --skip-mining-dict -S --no-color | tee {outputFile}'
     executeCMD(cmd)
     return outputFile
+
 
 def nuclei(domain, entryID, S_DIR, V_DIR):
     outputFile = f'{V_DIR}{domain}-nuclei-{entryID}.txt'
@@ -135,8 +167,10 @@ def nuclei(domain, entryID, S_DIR, V_DIR):
     executeCMD(cmd)
     return outputFile
 
+
 def SQLi(domain, entryID, S_DIR, V_DIR):
     return
+
 
 def github(domain, entryID, S_DIR, V_DIR):
     return
@@ -151,6 +185,7 @@ def generateWordlist(domain, entryID, S_DIR, wordlist):
             for word in uniqueSubdomains:
                 file.write(f'{word}\n')
         return outputFile
+
 
 def nmap(domain, entryID, P_DIR, flags, HTMLReport):
     allOutputFiles =  []

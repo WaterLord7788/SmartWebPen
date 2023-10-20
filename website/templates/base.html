@@ -42,7 +42,9 @@
           {% endif %}
           {% if user.is_authenticated %}
             {% if user.email == ADMIN %}
-              <li><a class="nav-item nav-link" style="color: red" id="home" href="/debug"><b>DEBUG</b></a></li>
+              {% if debugEnabled == False %}
+                <li><a class="nav-item nav-link" style="color: red" id="home" href="/debug"><b>DEBUG</b></a></li>
+              {% endif %}
             {% endif %}
           {% endif %}
           {% if user.is_authenticated %}

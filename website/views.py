@@ -93,7 +93,7 @@ def home():
     
     flash(str(f'<b>Scanning started</b> for domain {domain}!'), category='success')
     flash(str(f'The following <b>tools</b> are going to be used: {str(tools)}'), category='info')
-    return render_template("base.html", user=current_user, ADMIN=ADMIN)
+    return render_template("base.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
 def allowed_file(filename):
@@ -180,7 +180,7 @@ def ports():
 
     flash(str(f'<b>Port scanning started</b> for domain {domain}!'), category='success')
     flash(str(f'The following <b>flags</b> are going to be used: {str(flags)}'), category='info')
-    return render_template("base.html", user=current_user)
+    return render_template("base.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
 @views.route('/subdomains/<int:entryID>/', methods=['GET', 'POST'])
