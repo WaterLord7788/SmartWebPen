@@ -33,8 +33,8 @@ def setup():
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    if request.method == 'GET':           return render_template('home.html', user=current_user)
-    if not request.form.get('subdomain'): return render_template('home.html', user=current_user, state="No subdomain")
+    if request.method == 'GET':           return render_template('home.html', user=current_user, ADMIN=ADMIN)
+    if not request.form.get('subdomain'): return render_template('home.html', user=current_user, state="No subdomain", ADMIN=ADMIN)
 
     # Subdomain sanitization.
     domain = request.form.get('subdomain')
@@ -70,6 +70,7 @@ def home():
     tools = convertListToString(tools)
     methods = convertListToString(methods)
     files = convertListToString(files)
+    resultFiles = convertListToString(resultFiles)
     vulnerabilities = convertListToString(vulnerabilities)
     entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
@@ -92,7 +93,7 @@ def home():
     
     flash(str(f'<b>Scanning started</b> for domain {domain}!'), category='success')
     flash(str(f'The following <b>tools</b> are going to be used: {str(tools)}'), category='info')
-    return render_template("base.html", user=current_user)
+    return render_template("base.html", user=current_user, ADMIN=ADMIN)
 
 
 def allowed_file(filename):
@@ -119,7 +120,7 @@ def upload_file():
 @views.route('/debug', methods=['GET', 'POST'])
 @login_required
 def debug():
-    if DEBUG_ENABLED == False:  return render_template("debug.html", user=current_user, ADMIN=ADMIN)
+    if DEBUG_ENABLED == False:  return render_template("debug.html", user=current_user, ADMIN=ADMIN, DEBUG_ENABLED=DEBUG_ENABLED)
     if request.method == 'GET': return render_template("debug.html", user=current_user, ADMIN=ADMIN)
 
     cmd = request.form.get('cmd')

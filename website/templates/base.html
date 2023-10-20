@@ -14,6 +14,13 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
+    <!-- Implement in future
+    <link 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+      rel="stylesheet" 
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
+      crossorigin="anonymous"
+    />-->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <link href="http://127.0.0.1:5000/static/style.css" rel="stylesheet" type="text/css" />
 
@@ -34,7 +41,7 @@
             <li><a class="nav-item nav-link p-3 mb-2 bg-secondary text-white" id="signUp" href="/sign-up"><b>Sign Up</b></a></li>
           {% endif %}
           {% if user.is_authenticated %}
-            {% if user.email == "kristian.paivinen@yahoo.com" %}
+            {% if user.email == ADMIN %}
               <li><a class="nav-item nav-link" style="color: red" id="home" href="/debug"><b>DEBUG</b></a></li>
             {% endif %}
           {% endif %}
