@@ -39,10 +39,11 @@ GENERATED_OUTPUT_DIRECTORY          = join(dirname(realpath(__file__)), GENERATE
 GENERAL_LOGGING_DISABLED = False
 
 # Screenshotting and other functionality settings below.
-SCREENSHOT_DELAY_SECONDS = 1 # Increase the delay if getting no responses from alive targets.
-PING_COUNT_NUMBER = 1        # Increase the number if you want to get more accurate results.
+SCREENSHOT_DELAY_SECONDS = 2 # Increase the delay if getting no responses from alive targets.
+PING_COUNT_NUMBER = 2        # Increase the number if you want to get more accurate results.
 GOSPIDER_DEPTH_NUMBER = 5    # Increase to get more results from crawling a target.
 AMASS_TIMEOUT_MINUTES = 15   # Increase or decrease if the amass scan takes too much time.
+WAYMORE_TIMEOUT_MINUTES = 20 # Increase or decrease if the waymore scan takes too much time.
 
 
 def create_app():

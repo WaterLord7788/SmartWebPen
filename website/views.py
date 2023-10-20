@@ -270,7 +270,8 @@ def deleteScan():
     resultFiles = scan.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            executeCMD(f'rm -r {resultFile}')
+            try: os.rmdir(resultFile)
+            except: executeCMD(f'rm -r {resultFile}')
     if scan:
         db.session.delete(scan)
         db.session.commit()
@@ -287,7 +288,8 @@ def deleteVulnerability():
     resultFiles = vulnerability.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            executeCMD(f'rm -r {resultFile}')
+            try: os.rmdir(resultFile)
+            except: executeCMD(f'rm -r {resultFile}')
     if vulnerability:
         db.session.delete(vulnerability)
         db.session.commit()
@@ -304,7 +306,8 @@ def deletePortScan():
     resultFiles = portscan.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            executeCMD(f'rm -r {resultFile}')
+            try: os.rmdir(resultFile)
+            except: executeCMD(f'rm -r {resultFile}')
     if portscan:
         db.session.delete(portscan)
         db.session.commit()

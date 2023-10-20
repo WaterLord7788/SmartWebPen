@@ -1,5 +1,5 @@
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY, SCREENSHOT_DELAY_SECONDS
-from . import SCREENSHOT_DELAY_SECONDS, PING_COUNT_NUMBER, GOSPIDER_DEPTH_NUMBER, AMASS_TIMEOUT_MINUTES
+from . import SCREENSHOT_DELAY_SECONDS, PING_COUNT_NUMBER, GOSPIDER_DEPTH_NUMBER, AMASS_TIMEOUT_MINUTES, WAYMORE_TIMEOUT_MINUTES
 from flask import Blueprint, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
@@ -53,12 +53,12 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
         elif tool == 'waymore':
             willRunWaymore = True
-            outputFiles = waymore(domain, entryID, S_DIR)
+            outputFiles = waymore(domain, entryID, S_DIR, timeout=WAYMORE_TIMEOUT_MINUTES)
             for file in outputFiles:
                 addScanFileDB(entryID, file)
         
         elif tool == 'goSpider':
-            addScanFileDB(entryID, gofinder(domain, entryID, S_DIR, depth=GOSPIDER_DEPTH_NUMBER))
+            addScanFileDB(entryID, gospider(domain, entryID, S_DIR, depth=GOSPIDER_DEPTH_NUMBER))
 
         elif tool == 'xLinkFinder':
             addScanFileDB(entryID, xLinkFinder(domain, entryID, S_DIR))

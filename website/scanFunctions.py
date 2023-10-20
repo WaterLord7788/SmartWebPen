@@ -51,12 +51,13 @@ def crtsh(domain, entryID, S_DIR):
     return outputFile
 
 
-def waymore(domain, entryID, S_DIR):
+def waymore(domain, entryID, S_DIR, timeout=10):
     allOutputFiles = []
 
+    delaySeconds = int(timeout)*60
     outputDirectory = f'{S_DIR}{domain}-waymore/'
     resultFile = f'{S_DIR}{domain}-waymore-{entryID}.txt'
-    cmd = f'python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory} &>/dev/null && cp {outputDirectory}/waymore.txt {resultFile}'
+    cmd = f'timeout {delaySeconds} python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory} &>/dev/null && cp {outputDirectory}/waymore.txt {resultFile}'
     executeCMD(cmd)
 
     allOutputFiles.append(outputDirectory)
@@ -64,8 +65,8 @@ def waymore(domain, entryID, S_DIR):
     return allOutputFiles
 
 
-def gofinder(domain, entryID, S_DIR, depth=5):
-    outputFile = f'{S_DIR}{domain}-gofinder-{entryID}.txt'
+def gospider(domain, entryID, S_DIR, depth=5):
+    outputFile = f'{S_DIR}{domain}-gospider-{entryID}.txt'
     cmd = f'gospider -s {domain} --depth {depth} | tee {outputFile}'
     executeCMD(cmd)
     return outputFile
