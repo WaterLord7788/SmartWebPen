@@ -42,7 +42,8 @@ apt install prips
 
 echo "[*] Installing waymore!"
 git clone https://github.com/xnl-h4ck3r/waymore.git
-sudo python waymore/setup.py install
+python waymore/setup.py install
+pip3 install -r waymore/requirements.txt
 
 echo "[*] Installing retireJS!"
 apt install nodejs

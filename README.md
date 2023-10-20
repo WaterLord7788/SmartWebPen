@@ -81,6 +81,9 @@ The following tools are being used in this framework:
 * [prips](https://gitlab.com/prips/prips) - converting IP ranges to IPs
 * [waymore](https://github.com/xnl-h4ck3r/waymore) - automating asset discovery
 * [retire.js](https://github.com/RetireJS/retire.js) - automating JS asset discovery
+* [GoFinder](https://github.com/kkirsche/gofinder) - automating asset discovery
+* [xnLinkFinder](https://github.com/xnl-h4ck3r/xnLinkFinder) - automating asset discovery
+
 
 ## Additional information
 The framework will **automatically try to install all required tools**, so you don't have to do it yourself. Run `bash setup.bash` command, sit back and relax as this tool will do everything for you during the first startup!
@@ -101,6 +104,7 @@ The framework will **automatically try to install all required tools**, so you d
 
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/WaterLord7788/SmartWebPen/issues). 
+
 
 ## Show your support
 

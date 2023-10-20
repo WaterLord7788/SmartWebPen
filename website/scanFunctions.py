@@ -10,9 +10,10 @@ import json
 import os
 
 
-def amass(domain, entryID, S_DIR):
+def amass(domain, entryID, S_DIR, timeout=10):
+    delaySeconds = int(timeout)*60
     outputFile = f'{S_DIR}{domain}-amass-{entryID}.txt'
-    cmd = f'touch {outputFile} && amass enum -active -brute -d {domain} > {outputFile}'
+    cmd = f'touch {outputFile} && timeout {delaySeconds} amass enum -active -brute -d {domain} > {outputFile}'
     executeCMD(cmd)
     return outputFile
 
@@ -51,22 +52,39 @@ def crtsh(domain, entryID, S_DIR):
 
 
 def waymore(domain, entryID, S_DIR):
+    allOutputFiles = []
+
     outputDirectory = f'{S_DIR}{domain}-waymore/'
-    cmd = f'python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory}'
+    resultFile = f'{S_DIR}{domain}-waymore-{entryID}.txt'
+    cmd = f'python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory} &>/dev/null && cp {outputDirectory}/waymore.txt {resultFile}'
     executeCMD(cmd)
-    return outputDirectory
+
+    allOutputFiles.append(outputDirectory)
+    allOutputFiles.append(resultFile)
+    return allOutputFiles
+
+
+def gofinder(domain, entryID, S_DIR, depth=5):
+    outputFile = f'{S_DIR}{domain}-gofinder-{entryID}.txt'
+    cmd = f'gospider -s {domain} --depth {depth} | tee {outputFile}'
+    executeCMD(cmd)
+    return outputFile
+
+
+def xLinkFinder(domain, entryID, S_DIR):
+    return
 
 
 def checkAliveSubdomains(domain, entryID, S_DIR, moreDetails):
     if moreDetails == False:
         outputFile = f'{S_DIR}{domain}-alive-{entryID}.txt'
-        cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | httpx -no-color -silent | sort -u | tee {outputFile}'
+        cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | sort -u | httpx -no-color -silent | sort -u | tee {outputFile}'
         executeCMD(cmd)
 
     else:
         outputFile = f'{S_DIR}{domain}-alive+stats-{entryID}.txt'
         flags = '-title -cl -sc -tech-detect -web-server -fr -server -no-color -silent -web-server -asn -threads 50'
-        cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | httpx {flags} | sort -u | tee {outputFile}'
+        cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | sort -u | httpx {flags} | sort -u | tee {outputFile}'
         executeCMD(cmd)
 
     return outputFile

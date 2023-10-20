@@ -48,6 +48,8 @@ def home():
     if request.form.get('useWaybackurls'):       tools.append('waybackurls')
     if request.form.get('useCrt.sh'):            tools.append('crt.sh')
     if request.form.get('useWaymore'):           tools.append('waymore')
+    if request.form.get('useGoSpider'):          tools.append('goSpider')
+    if request.form.get('useXLinkFinder'):       tools.append('useXLinkFinder')
     if request.form.get('useCustomWordlistForSubdomains'): 
         methods.append('customWordlistForSubdomains')
         files.append(request.form.get('customWordlistForSubdomains'))
