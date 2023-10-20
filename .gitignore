@@ -131,6 +131,7 @@ dmypy.json
 # Just for testing purposes
 database.db
 .gf/*.*
+waymore/
 website/static/img/*.*
 website/__pycache__/*.pyc
 website/__pycache__/views.cpython-310.pyc
@@ -143,16 +144,16 @@ website/generated/ports/*.txt
 website/generated/subdomains/*.txt
 website/generated/vulnerabilities/*.txt
 website/templates/*.bak
-website/*.bak
 website/test.py
+website/*.bak
+geckodriver.log
+*/*/*/__pycache__/
+*/*/__pycache__/
+*/__pycache__/
 test.py
 *.log
 *.pot
 *.pyc
-*/*/*/__pycache__/
-*/*/__pycache__/
-*/__pycache__/
 resume.cfg
 errors.txt
 20*/
-geckodriver.log

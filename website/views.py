@@ -1,7 +1,6 @@
 from . import db, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, ADMIN, DEBUG_ENABLED, MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY
 from flask import Blueprint, request, flash, jsonify, flash, redirect, url_for, redirect
 from .check import checkForFolders      # Checking for necessary folders
-from .installation import installTools  # Checking for necessary tools
 from .models import User, Scan, Vulnerability, PortScan
 from flask_login import login_required, current_user
 from flask import Flask, render_template, session
@@ -25,7 +24,11 @@ views = Blueprint('views', __name__)
 @views.before_app_first_request
 def setup():
     print('[!] Setup checking.')
-    checkForFolders(GENERATED_OUTPUT_DIRECTORY, SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, PORT_SCAN_OUTPUT_DIRECTORY, VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
+    checkForFolders(
+        GENERATED_OUTPUT_DIRECTORY, 
+        SUBDOMAIN_SCAN_OUTPUT_DIRECTORY, 
+        PORT_SCAN_OUTPUT_DIRECTORY, 
+        VULNERABILITY_SCAN_OUTPUT_DIRECTORY)
     print('[+] Setup checking completed!')
 
 
@@ -60,6 +63,7 @@ def home():
         if request.form.get('XSS'):                                 vulnerabilities.append('XSS')
         if request.form.get('SQLi'):                                vulnerabilities.append('SQLi')
         if request.form.get('Nuclei'):                              vulnerabilities.append('Nuclei')
+        if request.form.get('useRetireJS'):                         vulnerabilities.append('retireJS')
         if request.form.get('useCustomWordlistForVulnerabilities'): 
             methods.append('customWordlistForVulnerabilities')
             files.append(request.form.get('customWordlistForVulnerabilities'))
@@ -264,12 +268,7 @@ def deleteScan():
     resultFiles = scan.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            # If there are no files, we just ignore the error, hence we use try...except clause.
-            try: os.remove(resultFile)
-            except: pass
-            # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
-            try: os.rmdir(os.path.dirname(resultFile))
-            except: pass
+            executeCMD(f'rm -r {resultFile}')
     if scan:
         db.session.delete(scan)
         db.session.commit()
@@ -286,12 +285,7 @@ def deleteVulnerability():
     resultFiles = vulnerability.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            # If there are no files, we just ignore the error, hence we use try...except clause.
-            try: s.remove(resultFile)
-            except: pass
-            # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
-            try: os.rmdir(os.path.dirname(resultFile))
-            except: pass
+            executeCMD(f'rm -r {resultFile}')
     if vulnerability:
         db.session.delete(vulnerability)
         db.session.commit()
@@ -308,12 +302,7 @@ def deletePortScan():
     resultFiles = portscan.resultFiles.split(' ')
     for resultFile in resultFiles:
         if len(resultFile) != 0:
-            # If there are no files, we just ignore the error, hence we use try...except clause.
-            try: s.remove(resultFile)
-            except: pass
-            # `os.rmdir` deletes only empty folder, so we need to do this every time after we delete a file.
-            try: os.rmdir(os.path.dirname(resultFile))
-            except: pass
+            executeCMD(f'rm -r {resultFile}')
     if portscan:
         db.session.delete(portscan)
         db.session.commit()

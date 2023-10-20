@@ -50,6 +50,13 @@ def crtsh(domain, entryID, S_DIR):
     return outputFile
 
 
+def waymore(domain, entryID, S_DIR):
+    outputDirectory = f'{S_DIR}{domain}-waymore/'
+    cmd = f'python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory}'
+    executeCMD(cmd)
+    return outputDirectory
+
+
 def checkAliveSubdomains(domain, entryID, S_DIR, moreDetails):
     if moreDetails == False:
         outputFile = f'{S_DIR}{domain}-alive-{entryID}.txt'
@@ -170,6 +177,10 @@ def XSS(domain, entryID, S_DIR, V_DIR):
     return outputFile
 
 
+def SQLi(domain, entryID, S_DIR, V_DIR):
+    return
+
+
 def nuclei(domain, entryID, S_DIR, V_DIR):
     outputFile = f'{V_DIR}{domain}-nuclei-{entryID}.txt'
     cmd = f'nuclei -l {S_DIR}{domain}-alive-{entryID}.txt -es info -silent -rl 80 -o {outputFile}'
@@ -177,8 +188,13 @@ def nuclei(domain, entryID, S_DIR, V_DIR):
     return outputFile
 
 
-def SQLi(domain, entryID, S_DIR, V_DIR):
-    return
+def retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=False):
+    if willRunWaymore == False: return None
+    inputFolder = f'{S_DIR}{domain}-waymore/'
+    outputFile = f'{V_DIR}{domain}-retireJS-{entryID}.txt'
+    cmd = f'retire --path {inputFolder} --insecure | tee {outputFile}'
+    executeCMD(cmd)
+    return outputFile
 
 
 def github(domain, entryID, S_DIR, V_DIR):

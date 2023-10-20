@@ -14,6 +14,9 @@ import random
 import json
 
 
+willRunWaymore = False
+
+
 def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
     print(); print(f'[+] Starting subdomain enumeration against {str(domain)}!')
     print(f'[*] Using the following tools   : {str(tools)}')
@@ -45,6 +48,10 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         elif tool == 'crt.sh':
             addScanFileDB(entryID, crtsh(domain, entryID, S_DIR))
 
+        elif tool == 'waymore':
+            willRunWaymore = True
+            addScanFileDB(entryID, waymore(domain, entryID, S_DIR))
+
     willIncludeASN = False
     willCheckAliveSubdomains = False
     for method in methods.split():
@@ -57,8 +64,6 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
 
         if method == 'searchTargetsByASN':
             willIncludeASN = True
-            # Function searchTargetsByASN() returns many files like - ['/file1.txt', '/file2.txt']
-            # so we need to add each file separately.
             outputFiles = searchTargetsByASN(domain, entryID, S_DIR)
             for file in outputFiles:
                 addScanFileDB(entryID, file)
@@ -74,7 +79,6 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         elif method == 'checkVulnerableParameters':
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
-            # As there are many entries in `vulns` variable, we need to scan each entry separately.
             for vuln in vulns:
                 addScanFileDB(entryID, checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln))
             addScanFileDB(entryID, interestingSubsAlive(domain, entryID, S_DIR))
@@ -120,6 +124,9 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
 
         elif vulnerability == 'Github':
             addVulnFileDB(entryID, github(domain, entryID, S_DIR, V_DIR))
+
+        elif vulnerability == 'retireJS':
+            addVulnFileDB(entryID, retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=willRunWaymore))
 
     cleanResultFilesDB(type='Vulnerability', entryID=entryID)
     resultFiles = getResultFilesDB(type='Vulnerability', entryID=entryID)
