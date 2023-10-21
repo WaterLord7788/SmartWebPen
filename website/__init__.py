@@ -75,14 +75,25 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    from .api.debug.views import DEBUG_VIEWS
+    from .api.ports.views import PORT_VIEWS
+    from .api.subdomains.views import SUBDOMAIN_VIEWS
+    from .api.upload.views import UPLOAD_VIEWS
+    from .api.vulnerabilities.views import VULNERABILITY_VIEWS
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(DEBUG_VIEWS, url_prefix='/api/debug')
+    app.register_blueprint(PORT_VIEWS, url_prefix='/api/ports')
+    app.register_blueprint(SUBDOMAIN_VIEWS,url_prefix='/api/subdomains')
+    app.register_blueprint(UPLOAD_VIEWS, url_prefix='/api/upload')
+    app.register_blueprint(VULNERABILITY_VIEWS, url_prefix='/api/vulnerabilities')
 
     from .models import User
     
     with app.app_context():
         db.create_all()
+
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'

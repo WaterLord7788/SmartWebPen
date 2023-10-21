@@ -101,52 +101,6 @@ def home():
     return render_template("base.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@views.route('/upload', methods=['GET', 'POST'])
-@login_required
-def upload_file():
-    if request.method == 'GET':     return render_template("upload.html", state="", user=current_user)
-    if 'file' not in request.files: return render_template("upload.html", state="No file part", user=current_user)
-
-    file = request.files['file']
-    if file.filename == '':
-        flash('No selected file')
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        return render_template("upload.html", state="Successful upload", file=file, user=current_user)
-    else:
-        return render_template("upload.html", state="Forbidden extension", user=current_user)
-
-
-@views.route('/debug', methods=['GET', 'POST'])
-@login_required
-def debug():
-    if DEBUG_ENABLED == False:  return render_template("debug.html", user=current_user, ADMIN=ADMIN, DEBUG_ENABLED=DEBUG_ENABLED)
-    if request.method == 'GET': return render_template("debug.html", user=current_user, ADMIN=ADMIN)
-
-    cmd = request.form.get('cmd')
-    output = executeCMD(cmd)
-    return render_template("debug.html", user=current_user, ADMIN=ADMIN, output=output)
-    
-
-@views.route('/subdomains', methods=['GET', 'POST'])
-@login_required
-def subdomains():
-    scans = Scan.query.all()
-    return render_template('subdomains.html', user=current_user, scans=scans)
-
-
-@views.route('/vulnerabilities', methods=['GET', 'POST'])
-@login_required
-def vulnerabilities():
-    vulnerabilities = Vulnerability.query.all()
-    return render_template('vulnerabilities.html', user=current_user, vulnerabilities=vulnerabilities)
-
-
 @views.route('/ports', methods=['GET', 'POST'])
 @login_required
 def ports():
@@ -188,59 +142,18 @@ def ports():
     return render_template("base.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
-@views.route('/subdomains/<int:entryID>/', methods=['GET', 'POST'])
+@views.route('/subdomains', methods=['GET', 'POST'])
 @login_required
-def getSubdomainScanDetails(entryID):
-    subdomainScan = Scan.query.filter_by(entryID=entryID).first()
-    if not subdomainScan: 
-        flash(str('No scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
-        return render_template('id.subdomains.html', user=current_user)
-        
-    resultFiles = subdomainScan.resultFiles
-    if len(resultFiles) < 4:
-        flash(str('No resulting files of scan with id of <b>'+str(entryID)+'</b> found!'), category='error')
-        flash('You might need to wait for the scan to finish.', category='info')
-        return render_template('id.subdomains.html', user=current_user)
-    
-    # Real work starts here.
-    # Code below fetches all the resulting files from the scan,
-    # and outputs the results into an HTML box in `id.subdomains.html` file.
-    resultFiles = resultFiles.split(' ')
-    resultFiles.pop(0)
-    files = {}
-
-    for resultFile in resultFiles:
-        file = ''
-        print(resultFile)
-        if '/subdomains/' in resultFile:     # If file is in subdomains/ folder.
-            with open(resultFile, 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    line = '<a/href="../../redirect?url='+line+'"/target="_blank">'+line+'</a>'
-                    line += '<br>'
-                    file += line
-            files[resultFile] = file
-        elif 'waybackurls+' in resultFile:  # If file has more than just subdomains.
-            with open(resultFile, 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    line += '<br>'
-                    file += line
-            files[resultFile] = file
-
-    return render_template('id.subdomains.html', files=files, user=current_user)
+def subdomains():
+    scans = Scan.query.all()
+    return render_template('subdomains.html', user=current_user, scans=scans)
 
 
-@views.route('/ports/<int:id>/', methods=['GET', 'POST'])
+@views.route('/vulnerabilities', methods=['GET', 'POST'])
 @login_required
-def getPortScanDetails(id):
-    return str('ID: '+str(id)+'')
-
-
-@views.route('/vulnerabilities/<int:id>/', methods=['GET', 'POST'])
-@login_required
-def getVulnerabilityScanDetails(id):
-    return str('ID: '+str(id)+'')
+def vulnerabilities():
+    vulnerabilities = Vulnerability.query.all()
+    return render_template('vulnerabilities.html', user=current_user, vulnerabilities=vulnerabilities)
 
 
 @views.route('/redirect', methods=['GET'])
@@ -262,55 +175,7 @@ def getFile():
     return render_template('file.html', file=file, contents=contents, user=current_user)
 
 
-@views.route('/delete-scan', methods=['POST'])
+@views.route('/upload', methods=['GET', 'POST'])
 @login_required
-def deleteScan():
-    scan = json.loads(request.data)
-    scanId = scan['scanId']
-    scan = Scan.query.get(scanId)
-    entryID = scan.entryID
-
-    cmd = f'rm -r {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/'
-    executeCMD(cmd)
-
-    if scan:
-        db.session.delete(scan)
-        db.session.commit()
-        flash('Scan deleted!', category='success')
-    return jsonify({})
-
-
-@views.route('/delete-vulnerability', methods=['POST'])
-@login_required
-def deleteVulnerability():
-    vulnerability = json.loads(request.data)
-    vulnId = vulnerability['vulnId']
-    vulnerability = Vulnerability.query.get(vulnId)
-    entryID = vulnerability.entryID
-    
-    cmd = f'rm -r {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/'
-    executeCMD(cmd)
-
-    if vulnerability:
-        db.session.delete(vulnerability)
-        db.session.commit()
-        flash('Vulnerability scan deleted!', category='success')
-    return jsonify({})
-
-
-@views.route('/delete-port', methods=['POST'])
-@login_required
-def deletePortScan():
-    portscan = json.loads(request.data)
-    portId = portscan['portId']
-    portscan = PortScan.query.get(portId)
-    entryID = portscan.entryID
-    
-    cmd = f'rm -r {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/'
-    executeCMD(cmd)
-
-    if portscan:
-        db.session.delete(portscan)
-        db.session.commit()
-        flash('Port scan deleted!', category='success')
-    return jsonify({})
+def upload_file():
+    return render_template("upload.html", state="", user=current_user)
