@@ -25,10 +25,9 @@
         <li class="list-group-item"></li>
         {% for scan in scans %}
             <li class="list-group-item">
-                <strong><a href="//127.0.0.1:5000/subdomains/{{ scan.entryID }}/" target="_blank">{{ scan.url.upper() }}</a></strong>
+                <strong><a href="//127.0.0.1:5000/api/subdomains/{{ scan.entryID }}/?output=html" target="_blank">{{ scan.url.upper() }}</a></strong>
                 Methods used&nbsp;&nbsp;: {{ scan.methods }}<br>
                 Tools used&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.tools }}<br>
-                Resulted files&nbsp;&nbsp;&nbsp;: {{ scan.resultFiles }}<br>
                 {% if scan.files %} Wordlists used : {{ scan.files }}<br> {% endif %}
                 EntryID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.entryID }}<br>
                 Date of scan&nbsp;&nbsp;&nbsp;&nbsp;: {{ scan.date }}<br>

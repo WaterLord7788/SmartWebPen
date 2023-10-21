@@ -31,6 +31,7 @@ class Scan(db.Model, UserMixin):
 class Vulnerability(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(500))
+    vulnerabilities = db.Column(db.String(200))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     entryID = db.Column(db.String(50))
