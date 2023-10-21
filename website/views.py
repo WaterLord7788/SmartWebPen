@@ -66,6 +66,7 @@ def home():
         if request.form.get('SQLi'):                                vulnerabilities.append('SQLi')
         if request.form.get('Nuclei'):                              vulnerabilities.append('Nuclei')
         if request.form.get('useRetireJS'):                         vulnerabilities.append('retireJS')
+        if request.form.get('useMantra'):                           vulnerabilities.append('mantra')
         if request.form.get('useCustomWordlistForVulnerabilities'): 
             methods.append('customWordlistForVulnerabilities')
             files.append(request.form.get('customWordlistForVulnerabilities'))

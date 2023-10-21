@@ -113,12 +113,7 @@
                 </th>
               </tr>
               <tr>
-                <th>
-                  <input type="checkbox" value="true" name="useRetireJS" id="useRetireJS">
-                  <label for="flexCheckDefault">
-                    Use <b>retire.js</b>
-                  </label>
-                </th>
+                <th></th>
                 <th>
                   <input type="checkbox" value="true" name="searchTargetsByASN" id="searchTargetsByASN">
                   <label for="flexCheckDefault">
@@ -140,11 +135,10 @@
               <tr>
                 <th>
                   <input type="checkbox" value="true" name="doVulnerabilityScanning" id="doVulnerabilityScanningButton"
-                    onclick="
-                      var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);for(var i = 0; i < elms.length; i++){if(elms[i].disabled == true){elms[i].disabled = false;}else{elms[i].disabled = true;}}"
+                    onclick="var elms = document.querySelectorAll(`[id='vulnCheckDefault']`);for(var i = 0; i < elms.length; i++){if(elms[i].disabled == true){elms[i].disabled = false;}else{elms[i].disabled = true;}}"
                   >
                   <label for="flexCheckDefault">
-                    Do <b>vulnerability scanning</b>
+                    <h5>Do <b>vulnerability scanning</b></h5>
                   </label>
                 </th>
               </tr>
@@ -195,8 +189,18 @@
                     <b>Github Secrets</b>
                   </label>
                 </th>
-                <th></th>
-                <th></th>
+                <th>
+                  <input disabled="true" type="checkbox" value="true" name="useMantra" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>Mantra</b> - API keys
+                  </label>
+                </th>
+                <th>
+                  <input type="checkbox" value="true" name="useRetireJS" id="vulnCheckDefault">
+                  <label for="flexCheckDefault">
+                    <b>Retire.js</b>
+                  </label>
+                </th>
                 <th></th>
               </tr>
             </tbody>
@@ -208,7 +212,7 @@
                   <input disabled="true" type="checkbox" value="true" name="createWordlists" id="createWordlists" 
                       onlick="var elms = document.querySelectorAll(`[id='wordlistItems']`);for(var i = 0; i < elms.length; i++){if(elms[i].disabled == true){elms[i].disabled = false;}else{elms[i].disabled = true;}}">
                   <label for="flexCheckDefault">
-                    <b>Create unique wordlists</b>
+                    <h5><b>Create unique wordlists</b></h5>
                   </label>
                 </th>
                 <th></th>
@@ -257,6 +261,7 @@
   document.getElementById('searchTargetsByASN').disabled = true;
   document.getElementById('createWordlists').disabled = false;
   document.getElementById('screenshotAliveDomains').disabled = true;
+  document.getElementById('useRetireJS').disabled = true;
 
   // Disable elements.
   var elms = document.querySelectorAll(`[id='wordlistItems']`);

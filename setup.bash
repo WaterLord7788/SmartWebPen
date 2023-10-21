@@ -50,6 +50,9 @@ apt install nodejs
 apt install npm
 npm install -g retire
 
+echo "[*] Intsalling Matra!"
+go install github.com/MrEmpy/Mantra@latest
+
 echo "[+] Completing the installation, thank you for being with us during this installation!"
 apt -y autoremove
 echo "[+++] Done!"

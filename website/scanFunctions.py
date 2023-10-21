@@ -207,6 +207,10 @@ def nuclei(domain, entryID, S_DIR, V_DIR):
     return outputFile
 
 
+def github(domain, entryID, S_DIR, V_DIR):
+    return
+
+
 def retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=False):
     if willRunWaymore == False: return None
     inputFolder = f'{S_DIR}{domain}-waymore/'
@@ -216,8 +220,13 @@ def retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=False):
     return outputFile
 
 
-def github(domain, entryID, S_DIR, V_DIR):
-    return
+def mantra(domain, entryID, S_DIR, V_DIR):
+    inputFiles = f'{S_DIR}{domain}-*-{entryID}.txt'
+    outputFile = f'{V_DIR}{domain}-mantra-{entryID}.txt'
+    cmd = f'cat {inputFiles} | grep ".js$" | mantra | tee {outputFile}'
+    executeCMD(cmd)
+    return outputFile
+
 
 def generateWordlist(domain, entryID, S_DIR, wordlist):
     if wordlist == 'subdomain':

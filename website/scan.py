@@ -137,6 +137,9 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
         elif vulnerability == 'retireJS':
             addVulnFileDB(entryID, retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=willRunWaymore))
 
+        elif vulnerability == 'mantra':
+            addVulnFileDB(entryID, mantra(domain, entryID, S_DIR, V_DIR))
+
     cleanResultFilesDB(type='Vulnerability', entryID=entryID)
     resultFiles = getResultFilesDB(type='Vulnerability', entryID=entryID)
     print(f'[+] Resulting files created     : {str(resultFiles)}')
