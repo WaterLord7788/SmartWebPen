@@ -36,7 +36,7 @@ def deleteVulnerability():
     vulnerability = Vulnerability.query.get(vulnId)
     entryID = vulnerability.entryID
     
-    cmd = f'rm -r {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/'
+    cmd = f'rm -r {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm -rf {VULNERABILITY_SCAN_OUTPUT_DIRECTORY}{entryID}/'
     executeCMD(cmd)
 
     if vulnerability:

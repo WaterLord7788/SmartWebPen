@@ -156,7 +156,6 @@ test.py
 *.pyc
 resume.cfg
 errors.txt
-20*/
 
 # File upload
 static/img/*.pdf

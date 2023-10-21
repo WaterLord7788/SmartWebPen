@@ -9,8 +9,8 @@ from werkzeug.utils import secure_filename
 from .databaseFunctions import *
 from bs4 import BeautifulSoup
 from .scanFunctions import *
-import requests
-import asyncio
+from .webFunctions import *
+import threading
 import random
 import json
 
@@ -20,7 +20,7 @@ willIncludeASN = False
 willCheckAliveSubdomains = False
 
 
-def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))):
+def startScan(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION)), vulnerabilities=[]):
     print(); print(f'[+] Starting subdomain enumeration against {str(domain)}!')
     print(f'[*] Using the following tools   : {str(tools)}')
     print(f'[*] Using the following methods : {str(methods)}')
@@ -36,73 +36,66 @@ def executeSubdomainEnumeration(domain, tools, methods, files, entryID=str(rando
         print(f'[*] Executing                   : {tool}')
 
         if tool == 'amass':
-            addScanFileDB(entryID, amass(domain, entryID, S_DIR, timeout=AMASS_TIMEOUT_MINUTES))
+            amass(domain, entryID, S_DIR, timeout=AMASS_TIMEOUT_MINUTES)
 
         elif tool == 'subfinder':
-            addScanFileDB(entryID, subfinder(domain, entryID, S_DIR))
+            subfinder(domain, entryID, S_DIR)
 
         elif tool == 'gau':
-            addScanFileDB(entryID, gau(domain, entryID, S_DIR))
+            gau(domain, entryID, S_DIR)
 
         elif tool == 'waybackurls':
-            addScanFileDB(entryID, waybackurls(domain, entryID, S_DIR, stage='onlySubdomains'))
-            addScanFileDB(entryID, waybackurls(domain, entryID, S_DIR, stage='everything'))
+            waybackurls(domain, entryID, S_DIR, stage='onlySubdomains')
+            waybackurls(domain, entryID, S_DIR, stage='everything')
 
         elif tool == 'crt.sh':
-            addScanFileDB(entryID, crtsh(domain, entryID, S_DIR))
+            crtsh(domain, entryID, S_DIR)
 
         elif tool == 'waymore':
             willRunWaymore = True
-            outputFiles = waymore(domain, entryID, S_DIR, timeout=WAYMORE_TIMEOUT_MINUTES)
-            for file in outputFiles:
-                addScanFileDB(entryID, file)
+            waymore(domain, entryID, S_DIR, timeout=WAYMORE_TIMEOUT_MINUTES)
         
         elif tool == 'goSpider':
-            addScanFileDB(entryID, gospider(domain, entryID, S_DIR, depth=GOSPIDER_DEPTH_NUMBER))
+            gospider(domain, entryID, S_DIR, depth=GOSPIDER_DEPTH_NUMBER)
 
         elif tool == 'xLinkFinder':
-            addScanFileDB(entryID, xLinkFinder(domain, entryID, S_DIR))
+            xLinkFinder(domain, entryID, S_DIR)
 
     for method in methods.split():
         print(f'[*] Using method                : {method}')
 
         if method == 'checkAliveSubdomains':
             willCheckAliveSubdomains = True
-            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, moreDetails=False))
-            addScanFileDB(entryID, checkAliveSubdomains(domain, entryID, S_DIR, moreDetails=True))
+            checkAliveSubdomains(domain, entryID, S_DIR, moreDetails=False)
+            checkAliveSubdomains(domain, entryID, S_DIR, moreDetails=True)
 
         if method == 'searchTargetsByASN':
             willIncludeASN = True
-            outputFiles = searchTargetsByASN(domain, entryID, S_DIR)
-            for file in outputFiles:
-                addScanFileDB(entryID, file)
+            searchTargetsByASN(domain, entryID, S_DIR)
 
         elif method == 'useScreenshotting':
-            outputFiles = useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5, delay=SCREENSHOT_DELAY_SECONDS)
-            for file in outputFiles:
-                addScanFileDB(entryID, file)
+            useScreenshotting(domain, entryID, S_DIR, V_DIR, threads=5, delay=SCREENSHOT_DELAY_SECONDS)
 
         elif method == 'checkExposedPorts':
-            addScanFileDB(entryID, checkExposedPorts(domain, entryID, S_DIR, includeASN=willIncludeASN))
+            checkExposedPorts(domain, entryID, S_DIR, includeASN=willIncludeASN)
 
         elif method == 'checkVulnerableParameters':
             vulns = ['debug_logic', 'idor', 'img-traversal', 'interestingEXT', 'interestingparams', 'interestingsubs', 
                      'jsvar', 'lfi', 'rce', 'redirect', 'sqli', 'ssrf', 'ssti', 'xss']
             for vuln in vulns:
-                addScanFileDB(entryID, checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln))
-            addScanFileDB(entryID, interestingSubsAlive(domain, entryID, S_DIR))
+                checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType=vuln)
+            interestingSubsAlive(domain, entryID, S_DIR)
 
         elif method == 'generateSubdomainWordlist':
-            addScanFileDB(entryID, generateWordlist(domain, entryID, S_DIR, wordlist='subdomain'))
+            generateWordlist(domain, entryID, S_DIR, wordlist='subdomain')
 
     for file in files.split():
         print(f'[*] Using file                  : {file}')
 
-    cleanResultFilesDB(type='Scan', entryID=entryID)
-    resultFiles = getResultFilesDB(type='Scan', entryID=entryID)
-    print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Subdomain scanning completed! Check logs in {S_DIR}')
-    saveDB()
+
+    if vulnerabilities:
+        executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
 
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
@@ -120,31 +113,27 @@ def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
         print(f'[*] Executing scanning for      : {str(vulnerability)}')
 
         if vulnerability == 'CRLF':
-            addVulnFileDB(entryID, CRLF(domain, entryID, S_DIR, V_DIR))
+            CRLF(domain, entryID, S_DIR, V_DIR)
 
         elif vulnerability == 'XSS':
-            addVulnFileDB(entryID, XSS(domain, entryID, S_DIR, V_DIR))
+            XSS(domain, entryID, S_DIR, V_DIR)
 
         elif vulnerability == 'Nuclei':
-            addVulnFileDB(entryID, nuclei(domain, entryID, S_DIR, V_DIR))
+            nuclei(domain, entryID, S_DIR, V_DIR)
 
         elif vulnerability == 'SQLi':
-            addVulnFileDB(entryID, SQLi(domain,entryID, S_DIR, V_DIR))
+            SQLi(domain,entryID, S_DIR, V_DIR)
 
         elif vulnerability == 'Github':
-            addVulnFileDB(entryID, github(domain, entryID, S_DIR, V_DIR))
+            github(domain, entryID, S_DIR, V_DIR)
 
         elif vulnerability == 'retireJS':
-            addVulnFileDB(entryID, retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=willRunWaymore))
+            retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=willRunWaymore)
 
         elif vulnerability == 'mantra':
-            addVulnFileDB(entryID, mantra(domain, entryID, S_DIR, V_DIR))
+            mantra(domain, entryID, S_DIR, V_DIR)
 
-    cleanResultFilesDB(type='Vulnerability', entryID=entryID)
-    resultFiles = getResultFilesDB(type='Vulnerability', entryID=entryID)
-    print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Vulnerability scanning completed! Check logs in {V_DIR}')
-    saveDB()
 
 
 def executePortScanning(domain, flags, HTMLReport, entryID):
@@ -155,12 +144,6 @@ def executePortScanning(domain, flags, HTMLReport, entryID):
     P_DIR = P_DIR + entryID + '/'          # Example: /root/Desktop/SmartWebPen/website/generated/ports/<entryID>/
     executeCMD(f'mkdir {P_DIR}')           # Create a folder, in case it being missing.
 
-    outputFiles = nmap(domain, entryID, P_DIR, flags, HTMLReport=HTMLReport)
-    for file in outputFiles:
-        addPortScanFileDB(entryID, file)
+    nmap(domain, entryID, P_DIR, flags, HTMLReport=HTMLReport)
 
-    cleanResultFilesDB(type='PortScan', entryID=entryID)
-    resultFiles = getResultFilesDB(type='PortScan', entryID=entryID)
-    print(f'[+] Resulting files created     : {str(resultFiles)}')
     print(f'[+] Port scanning completed! Check logs in {P_DIR}')
-    saveDB()

@@ -40,7 +40,7 @@ def home():
 
     domain = request.form.get('subdomain')
     domain = sanitizeInput(domain)
-    tools, methods, files, resultFiles, vulnerabilities = [], [], [], [], []
+    tools, methods, files, vulnerabilities = [], [], [], []
 
     if request.form.get('useAMASS'):             tools.append('amass')
     if request.form.get('useSubfinder'):         tools.append('subfinder')
@@ -75,30 +75,23 @@ def home():
     tools = convertListToString(tools)
     methods = convertListToString(methods)
     files = convertListToString(files)
-    resultFiles = convertListToString(resultFiles)
     vulnerabilities = convertListToString(vulnerabilities)
     entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
     # Create scanning report entry in database.db.
-    NEW_SCAN = Scan(url=domain, methods=methods, tools=tools, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
+    NEW_SCAN = Scan(url=domain, methods=methods, tools=tools, vulnerabilities=vulnerabilities, entryID=entryID)
     db.session.add(NEW_SCAN)
     saveDB()
 
-    # Start executing commands in scan.py file.
-    executeSubdomainEnumeration(domain, tools, methods, files, entryID)
-
-    # Start executing vulnerability scanning, if user decided to do so.
-    if request.form.get('doVulnerabilityScanning'):
-        NEW_SECURITY_SCAN = Vulnerability(url=domain, resultFiles=resultFiles, vulnerabilities=vulnerabilities, entryID=entryID)
+    if vulnerabilities:
+        NEW_SECURITY_SCAN = Vulnerability(url=domain, vulnerabilities=vulnerabilities, entryID=entryID)
         db.session.add(NEW_SECURITY_SCAN)
         saveDB()
 
-        # Start executing commands in scan.py file.
-        executeVulnerabilityScanning(domain, vulnerabilities, files, entryID)
+    startBackgroundScan(domain, tools, methods, files, entryID, vulnerabilities)
     
     flash(str(f'<b>Scanning started</b> for domain {domain}!'), category='success')
-    flash(str(f'The following <b>tools</b> are going to be used: {str(tools)}'), category='info')
-    return render_template("base.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
+    return render_template("home.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
 @views.route('/ports', methods=['GET', 'POST'])
@@ -112,7 +105,7 @@ def ports():
 
     domain = request.form.get('domain')
     domain = sanitizeInput(domain)
-    flags, resultFiles = [], []
+    flags = []
 
     if request.form.get('use-sV_flag'): flags.append('-sV')
     if request.form.get('use-Pn_flag'): flags.append('-Pn')
@@ -126,11 +119,10 @@ def ports():
 
     # Convert list to string.
     flags = convertListToString(flags)
-    resultFiles = convertListToString(resultFiles)
     entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
     # Create scanning report entry in database.db.
-    NEW_PORTSCAN = PortScan(url=domain, flags=flags, resultFiles=resultFiles, entryID=entryID)
+    NEW_PORTSCAN = PortScan(url=domain, flags=flags, entryID=entryID)
     db.session.add(NEW_PORTSCAN)
     saveDB()
 
@@ -179,3 +171,14 @@ def getFile():
 @login_required
 def upload_file():
     return render_template("upload.html", state="", user=current_user)
+
+
+def startBackgroundScan(domain, tools, methods, files, entryID, vulnerabilities=None):
+    thread = threading.Thread(target=startScan, kwargs=
+                {
+                    'domain':domain, 'tools':tools, 'methods':methods, 'files':files,
+                    'entryID':entryID, 'vulnerabilities':vulnerabilities
+                }
+            )
+    thread.start()
+    return

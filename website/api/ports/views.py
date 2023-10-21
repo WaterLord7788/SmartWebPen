@@ -36,7 +36,7 @@ def deletePortScan():
     portscan = PortScan.query.get(portId)
     entryID = portscan.entryID
     
-    cmd = f'rm -r {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/'
+    cmd = f'rm -r {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm -rf {PORT_SCAN_OUTPUT_DIRECTORY}{entryID}/'
     executeCMD(cmd)
 
     if portscan:

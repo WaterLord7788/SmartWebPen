@@ -2,7 +2,7 @@ from flask import Flask, flash, request, redirect, url_for
 from os.path import join, dirname, realpath
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from .systemFunctions import *
+from .systemFunctions import generateSafeSecret
 from pathlib import Path
 from os import path
 import warnings

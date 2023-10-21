@@ -73,7 +73,7 @@ def deleteScan():
     scan = Scan.query.get(scanId)
     entryID = scan.entryID
 
-    cmd = f'rm -r {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/'
+    cmd = f'rm -r {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/* && rm -rf {SUBDOMAIN_SCAN_OUTPUT_DIRECTORY}{entryID}/'
     executeCMD(cmd)
 
     if scan:
