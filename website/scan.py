@@ -21,6 +21,8 @@ willCheckAliveSubdomains = False
 
 
 def startScan(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION)), vulnerabilities=[]):
+    global willRunWaymore, willIncludeASN, willCheckAliveSubdomains
+
     print(); print(f'[+] Starting subdomain enumeration against {str(domain)}!')
     print(f'[*] Using the following tools   : {str(tools)}')
     print(f'[*] Using the following methods : {str(methods)}')
@@ -99,6 +101,8 @@ def startScan(domain, tools, methods, files, entryID=str(random.randint(MIN_NUMB
 
 
 def executeVulnerabilityScanning(domain, vulnerabilities, files, entryID):
+    global willRunWaymore, willIncludeASN, willCheckAliveSubdomains
+
     print(); print(f'[*] Starting vulnerability scanning against {str(domain)}!')
     print(f'[*] Searching vulnerabilities   : {vulnerabilities}')
     print(f'[*] Using the following files   : {str(files)}')

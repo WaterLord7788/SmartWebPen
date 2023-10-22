@@ -79,7 +79,7 @@ def home():
     entryID = str(random.randint(MIN_NUMBER_FILEGENERATOR, MAX_NUMBER_FILEGENERATION))
 
     # Create scanning report entry in database.db.
-    NEW_SCAN = Scan(url=domain, methods=methods, tools=tools, vulnerabilities=vulnerabilities, entryID=entryID)
+    NEW_SCAN = Scan(url=domain, methods=methods, tools=tools, entryID=entryID)
     db.session.add(NEW_SCAN)
     saveDB()
 
@@ -91,6 +91,7 @@ def home():
     startBackgroundScan(domain, tools, methods, files, entryID, vulnerabilities)
     
     flash(str(f'<b>Scanning started</b> for domain {domain}!'), category='success')
+    flash(str(f'Using the following methods: {methods}'), category='info')
     return render_template("home.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
@@ -131,7 +132,7 @@ def ports():
 
     flash(str(f'<b>Port scanning started</b> for domain {domain}!'), category='success')
     flash(str(f'The following <b>flags</b> are going to be used: {str(flags)}'), category='info')
-    return render_template("base.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
+    return render_template("ports.html", user=current_user, ADMIN=ADMIN, debugEnabled=DEBUG_ENABLED)
 
 
 @views.route('/subdomains', methods=['GET', 'POST'])

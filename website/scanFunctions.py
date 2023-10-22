@@ -57,7 +57,11 @@ def waymore(domain, entryID, S_DIR, timeout=10):
     delaySeconds = int(timeout)*60
     outputDirectory = f'{S_DIR}{domain}-waymore/'
     resultFile = f'{S_DIR}{domain}-waymore-{entryID}.txt'
-    cmd = f'timeout {delaySeconds} python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory} &>/dev/null && cp {outputDirectory}/waymore.txt {resultFile}'
+
+    cmd = f'timeout {delaySeconds} python3 waymore/waymore.py -i {domain} -mode B -oR {outputDirectory} &>/dev/null'
+    executeCMD(cmd)
+
+    cmd = f'cp {outputDirectory}waymore.txt {resultFile}'
     executeCMD(cmd)
 
     allOutputFiles.append(outputDirectory)
@@ -67,7 +71,7 @@ def waymore(domain, entryID, S_DIR, timeout=10):
 
 def gospider(domain, entryID, S_DIR, depth=5):
     outputFile = f'{S_DIR}{domain}-gospider-{entryID}.txt'
-    cmd = f'gospider -s {domain} --depth {depth} | tee {outputFile}'
+    cmd = f'gospider -s https://{domain} --depth {depth} | tee {outputFile}'
     executeCMD(cmd)
     return outputFile
 
@@ -91,13 +95,13 @@ def checkAliveSubdomains(domain, entryID, S_DIR, moreDetails):
     return outputFile
 
 
-def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads, delay):
+def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads, delay=2):
     allOutputFiles = []
     date = datetime.date.today()
     domains = f'{S_DIR}{domain}-alive-{entryID}.txt'
     reportDirectory = f'{S_DIR}{domain}-report/'
     screenshotsDirectory = f'{S_DIR}{domain}-report/screens/'
-    eyewitnessCmd = f'eyewitness -f {domains} --threads {threads} --jitter 2 --delay 1 --web --max-retries 3 --no-prompt --selenium-log-path=/dev/null'
+    eyewitnessCmd = f'eyewitness -f {domains} --threads {threads} --jitter 2 --delay {delay} --web --max-retries 6 --no-prompt --selenium-log-path=/dev/null'
 
     cmd = f"""
     mkdir {reportDirectory}
@@ -105,8 +109,8 @@ def useScreenshotting(domain, entryID, S_DIR, V_DIR, threads, delay):
     {eyewitnessCmd}
     mv {date}*/screens/*.png {screenshotsDirectory}
     mv {date}*/report*.html {reportDirectory}
-    rm {date}*/ -r
-    rm geckodriver.log
+    rm {date}*/ -r 2>/dev/null
+    rm geckodriver.log 2>/dev/null
     """.format(
         screenshotsDirectory=screenshotsDirectory,
         reportDirectory=reportDirectory,
@@ -162,7 +166,7 @@ def checkExposedPorts(domain, entryID, S_DIR, includeASN=False):
 
 def checkVulnerableParameters(domain, entryID, S_DIR, sensitiveVulnerabilityType):
     outputFile = f'{S_DIR}{domain}-params-{sensitiveVulnerabilityType}-{entryID}.txt'
-    cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format %d | sort -u | gf {sensitiveVulnerabilityType} | tee -a {outputFile}'
+    cmd = f'cat {S_DIR}{domain}-*-{entryID}.txt | unfurl format "%d%p?%q%f" | sort -u | gf {sensitiveVulnerabilityType} | tee -a {outputFile}'
     executeCMD(cmd)
     return outputFile
 
@@ -215,7 +219,7 @@ def retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=False):
     if willRunWaymore == False: return None
     inputFolder = f'{S_DIR}{domain}-waymore/'
     outputFile = f'{V_DIR}{domain}-retireJS-{entryID}.txt'
-    cmd = f'retire --path {inputFolder} --insecure | tee {outputFile}'
+    cmd = f'retire --path {inputFolder} --insecure --nocache 2>{outputFile}'
     executeCMD(cmd)
     return outputFile
 
@@ -223,7 +227,7 @@ def retireJS(domain, entryID, S_DIR, V_DIR, willRunWaymore=False):
 def mantra(domain, entryID, S_DIR, V_DIR):
     inputFiles = f'{S_DIR}{domain}-*-{entryID}.txt'
     outputFile = f'{V_DIR}{domain}-mantra-{entryID}.txt'
-    cmd = f'cat {inputFiles} | grep ".js$" | mantra | tee {outputFile}'
+    cmd = f'cat {inputFiles} | grep ".js$" | Mantra -s | tee {outputFile}'
     executeCMD(cmd)
     return outputFile
 

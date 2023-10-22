@@ -24,7 +24,6 @@ class Scan(db.Model, UserMixin):
     tools = db.Column(db.String(1000))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    vulnerabilities = db.Column(db.String(200))
     entryID = db.Column(db.String(50))
     
     
