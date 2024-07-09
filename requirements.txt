@@ -1,9 +1,12 @@
 beautifulsoup4>=4.11.2
-Flask>=2.0.3
+Flask>=2.2.5
 Flask_Login>=0.6.2
 Flask_SQLAlchemy>=2.5.1
 requests==2.27.1
 SQLAlchemy>=1.4.31
-Werkzeug>=2.0.2
+Werkzeug>=2.2.3
 asyncio>=3.4.3
 pathlib2>=2.3.7
+certifi>=2024.7.4 # not directly required, pinned by Snyk to avoid a vulnerability
+idna>=3.7 # not directly required, pinned by Snyk to avoid a vulnerability
+jinja2>=3.1.4 # not directly required, pinned by Snyk to avoid a vulnerability
